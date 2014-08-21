@@ -1,4 +1,4 @@
-class SiteCreatorController < ApplicationController
+class SiteCreatorPreviewController < ApplicationController
   def new
   end
 
@@ -9,8 +9,5 @@ class SiteCreatorController < ApplicationController
   end
 
   def update
-  end
-
-  def destroy
   end
 end

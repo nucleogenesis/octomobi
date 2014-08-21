@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe HomePageController, :type => :controller do
 
 	describe "GET 'index'" do
-		## Pretty Vanilla Stuff for Integration Testing
+		## Pretty Vanilla Stuff 
+		#  If it loads, we're happy around this spec...
 
 		it "returns http success" do
 			get 'index'

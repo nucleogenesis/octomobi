@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140821021846) do
+ActiveRecord::Schema.define(version: 20140821202439) do
 
   create_table "admins", force: true do |t|
     t.string   "first_name",             default: "", null: false
@@ -98,6 +98,16 @@ ActiveRecord::Schema.define(version: 20140821021846) do
     t.datetime "updated_at"
   end
 
+  create_table "guests", force: true do |t|
+    t.string   "email",              default: "",     null: false
+    t.string   "encrypted_password", default: "",     null: false
+    t.string   "preview_url",        default: "null"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "guests", ["email"], name: "index_guests_on_email", unique: true
+
   create_table "image_gallery_features", force: true do |t|
     t.string   "title"
     t.datetime "created_at"
@@ -142,6 +152,7 @@ ActiveRecord::Schema.define(version: 20140821021846) do
     t.string   "title"
     t.string   "desktop_site_url"
     t.string   "logo_location"
+    t.string   "preview_url",              default: "null"
   end
 
   create_table "social_links_features", force: true do |t|

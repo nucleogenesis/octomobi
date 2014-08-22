@@ -1,7 +1,6 @@
 require 'factory_girl'
 require 'database_cleaner'
 require 'devise'
-require 'capybara/rails'
 
 RSpec.configure do |config|
 	config.include FactoryGirl::Syntax::Methods

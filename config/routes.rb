@@ -1,15 +1,11 @@
 OctomobiRails::Application.routes.draw do
-  get "site_creator_preview/new"
-  get "site_creator_preview/create"
-  get "site_creator_preview/edit"
-  get "site_creator_preview/update"
 	##	
 	#	Routes For 'www.octomobi.com'
 	#	Routes here are for all pages within the primary domain of the site
 	#	including the Admin scope, site-creator (preview and main), and user
 	#	management
 	## 
-	root to: "home#index"
+	root to: "home_page#index"
 
 	scope :admin do
 		devise_for :admins
@@ -25,7 +21,9 @@ OctomobiRails::Application.routes.draw do
 		as: 'site_creator_review'
 
 	resources :subscriptions
+	resources :site_creator_preview
 
+	match '/user/dashboard',	to: 'customers#dashboard', via: :get, as: 'customer_dashboard'
 
 
 	##

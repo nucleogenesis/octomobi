@@ -1,4 +1,7 @@
 class SiteCreatorController < ApplicationController
+	before_action :authenticate_customer!, :except => [:new]
+	before_action :authenticate_site_ownership, :only => [:edit, :update, :destroy]
+
 	def new
 		# Just renders site_creator/new.html.erb
 		# which then renders the html/javascript
@@ -164,4 +167,14 @@ class SiteCreatorController < ApplicationController
 			end
 		end
 	end	
+
+	def authenticate_site_ownership
+		# Ensure that the site trying to be accessed belongs to the
+		# current user.
+		if Site.find(params[:id]).customer_id != current_customer.id
+			flash[:alert] = "There is no site by that name."
+			redirect_to customer_dashboard_path
+		end
+	end
+
 end

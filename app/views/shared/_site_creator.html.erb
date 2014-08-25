@@ -1,0 +1,20 @@
+<section class="site_creator">
+	<div class="creator">
+		<div class="toolbox">
+			Toolbox
+		</div>
+		<div class="feature_list">
+			Feature List
+		</div>
+		<div class="mobile_preview">
+			Mobile Preview
+		</div>
+	</div>
+
+	<div id="register_modal">
+	</div>
+	<% if !customer_signed_in? %>
+		<%= render :partial => 'shared/javascripts/sign_up_modal.html.erb' %>
+	<% end %>
+</section>
+

@@ -19,7 +19,6 @@ RSpec.describe SiteCreatorController, :type => :controller do
 				expect(response.status).to eq(200)
 			end
 		end
-
 	end
 	
 	context "site_creator#create" do

@@ -1,0 +1,39 @@
+<!-- shared/home_header | rendered in layouts/application -->
+<header class="home_header">
+	<nav class="main_nav">
+		<%= image_tag "logo.png", alt: "Octomobi Logo" %>
+		<ul>
+			<li><%= link_to "Home", root_path %></li>
+			<li><%= link_to "Pricing", request.original_url + "#pricing" %></li>
+			<li><%= link_to "Features", root_path + "/#features" %></li>
+			<li class="nav_last"><%= link_to "Help", "#" %></li>
+		</ul>
+		<%= render :partial => "shared/account" %>
+	</nav>
+
+	<div class="header_content">
+
+		<%= render :partial => 'shared/errors' %>
+
+		<section class="header_information">
+			<div class="left_header">
+				<h1>Make Your Website Mobile Friendly With Octomobi Today!</h1>
+				<ul>
+					<li>Doesn't affect your existing website</li>
+					<li>Easy to use!</li>
+					<li>Zero programming knowledge needed</li>
+					<li>Dozens of templates to choose from</li>
+					<li>Risk free - 100% satisfaction guaranteed!</li>
+				</ul>
+				<%= link_to "<span>Click Here to Preview Octomobi &nbsp;&nbsp;></span>".html_safe,
+					new_site_creator_path, { :class => "preview_button" } %>
+			</div>
+			<div class="right_header">
+				<h2>See What Octomobi Can Do For You!</h2>
+				<div class="image_slider">
+					##IMAGE SLIDER##
+				</div>
+			</div>
+		</section>
+	</div>
+</header>

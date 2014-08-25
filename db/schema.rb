@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140821202439) do
+ActiveRecord::Schema.define(version: 20140825080319) do
 
   create_table "admins", force: true do |t|
     t.string   "first_name",             default: "", null: false
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id"
+    t.integer  "order"
   end
 
   create_table "content_page_features", force: true do |t|
@@ -54,6 +55,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id"
+    t.integer  "order"
   end
 
   create_table "customers", force: true do |t|
@@ -87,6 +89,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id"
+    t.integer  "order"
   end
 
   create_table "gallery_images", force: true do |t|
@@ -96,6 +99,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.string   "link_to"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "order"
   end
 
   create_table "guests", force: true do |t|
@@ -113,6 +117,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id"
+    t.integer  "order"
   end
 
   create_table "introduction_features", force: true do |t|
@@ -121,6 +126,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "updated_at"
     t.integer  "site_id"
     t.string   "title"
+    t.integer  "order"
   end
 
   create_table "payments", force: true do |t|
@@ -140,6 +146,7 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id"
+    t.integer  "order"
   end
 
   create_table "sites", force: true do |t|
@@ -152,7 +159,8 @@ ActiveRecord::Schema.define(version: 20140821202439) do
     t.string   "title"
     t.string   "desktop_site_url"
     t.string   "logo_location"
-    t.string   "preview_url",              default: "null"
+    t.boolean  "is_active"
+    t.string   "preview_url"
   end
 
   create_table "social_links_features", force: true do |t|

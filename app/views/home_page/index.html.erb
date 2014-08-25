@@ -1,2 +1,28 @@
-<h1>HomePage#index</h1>
-<p>Find me in app/views/home_page/index.html.erb</p>
+<div class="home_content">
+	<section class="steps">
+		<h2>Create your new Mobile Website in Minutes!</h3>
+		<div class="step">
+			<h3>1. Layout</h3>
+			<p>Choose the style you want from one of our many templates!</p>
+		</div>
+		<div class="step">
+			<h3>2. Content</h3>
+			<p>Add some of our many features including content pages, image galleries and more.</p>
+		</div>
+		<div class="step">
+			<h3>3. Styling</h3>
+			<p>Add your logo, customize fonts, colors and styling.</p>
+		</div>
+		<div class="step">
+			<h3>4. Publish</h3>
+			<p>Choose your domain and publish your site!</p>
+		</div>
+		<div style="width: 65%; margin: 0 auto;">
+		<%= link_to "<span>Click Here to Preview Octomobi &nbsp;></span>".html_safe,
+			new_site_creator_path, { :class => "preview_button" } %>
+		</div>
+
+	</section>
+	<%= render :partial => 'shared/pricing' %>
+	<%= render :partial => 'shared/features' %>
+</div>

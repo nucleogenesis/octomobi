@@ -1,3 +1,29 @@
 // Place all the styles related to the site_creator controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.site_creator {
+	.creator {
+		width: 100%;
+		height: 100%;
+		
+		.toolbox {
+			float: left;
+			width: 30%;
+			height: 100%;
+		}
+		
+		.feature_list {
+			float:left;
+			width: 30%;
+			height: 100%;
+		}
+
+		.mobile_preview {
+			float:left;
+			width: 40%;
+			height: 100%;
+		}
+	}
+}
+

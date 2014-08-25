@@ -9,6 +9,5 @@ FactoryGirl.define do
 	  google_analytics_api_key "UAxXXXXX"
 	  desktop_site_url nil
 	  logo_location "www.mysite.com/image/logo.png"
-	  preview_url "www.mysite.com"
   end
 end

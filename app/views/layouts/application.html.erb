@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>OctomobiRails</title>
-  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
-  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-	<p class="notice"><%= notice %></p>
-	       <p class="alert"><%= alert %></p>
+	<head>
+		<title>OctomobiRails</title>
+		<%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+		<%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+		<%= csrf_meta_tags %>
+	</head>
+	<body>
+		<div class="wrapper">
+			<% if controller_name == "home_page" && action_name == "index" %>
+				<%= render :partial => 'shared/home_header' %>
+			<% else %>
+				<%= render :partial => 'shared/header' %>
+			<% end %>
 
-<%= yield %>
+			<%= yield %>
 
-</body>
+			<%= render :partial => 'shared/footer' %>
+		</div>
+	</body>
 </html>

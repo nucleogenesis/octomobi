@@ -1,0 +1,19 @@
+<!-- shared/header | rendered in layouts/application -->
+<header class="site_header">
+	<nav class="main_nav">
+		<%= image_tag "logo.png", alt: "Octomobi Logo" %>
+		<ul>
+			<li><%= link_to "Home", root_path %></li>
+			<li><%= link_to "Pricing", request.original_url + "#pricing" %></li>
+			<li><%= link_to "Features", root_path + "/#features" %></li>
+			<li class="nav_last"><%= link_to "Help", "#" %></li>
+		</ul>
+		<%= render :partial => "shared/account" %>
+	</nav>
+
+	<div class="header_content">
+
+		<%= render :partial => 'shared/errors' %>
+
+	</div>
+</header>

@@ -1,0 +1,231 @@
+// Site-Wide Variables
+$primary_font: "Helvetica", "Arial", sans-serif;
+$font_color: #6A6D6D;
+$primary_color: #80AC00;
+
+// Site-Wide Styles
+
+html, body {
+	font-family: $primary_font;
+	background: #fff;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
+// Header => 'shared/header'
+
+// Site-Wide Header
+.main_nav {
+	width: 100%;
+	height: 80px;
+	margin: 0;
+	padding: 0;
+	background-color: #464646;
+
+	img { 
+		float: left;
+		margin: 10px;
+		padding: 0;
+	}
+	
+	ul {
+		height: 50%;
+		margin: 10px 10px 0 0;
+		float: right;
+		list-style-type: none;
+		li { 
+			padding: 0px 10px;
+			display: inline-block;
+			border-right: 1px solid black;
+		}
+		.nav_last { 
+			border: none;
+		}
+		a {
+			display: block;
+			color: #fff
+		}
+		a:hover {
+			color: $primary_color;
+		}
+	}
+}
+.site_header { 
+	width: 100%;
+	height: 80px;
+}
+
+// Home-Page Header
+.home_header {
+	width: 100%;
+	height: 450px;
+	background-color: gray;
+	.header_content {
+		width: 100%;
+		height: 100%;
+
+		.header_information {
+			width: 100%;
+			height: 80%;
+
+			.left_header {
+				width: 30%;
+				height: 70%;
+				float: left;
+				margin-left: 5%;
+				li {
+					font-size: 18px;
+					padding: 5px;
+				}
+			}
+			.right_header {
+				width: 55%;
+				height: 100%;
+				margin-left: 5%;
+				float: left;
+				.image_slider {
+					width: 100%;
+					height: 80%;
+					background: white
+				}
+			}
+		}
+	}
+}
+.account_information {
+	float: right;
+	margin-right: 20px;
+	clear: right;
+	a {
+		color: #fff;
+		text-decoration: none;
+	}
+	a:visited {
+		color: #fff;
+	}
+	a:hover {
+		color: $primary_color;
+	}
+}
+
+// Pricing Table => 'shared/pricing'
+
+// Table on Home Page
+.home_pricing {
+	width: 100%;
+	clear: both;
+	background-color: $primary_color;
+	h2 {
+		padding: 20px 0;
+		margin: 0;
+		background-color: #fff;
+	}
+	h4, p {
+		padding: 10px;
+		margin: 0;
+	}
+	.descriptions {
+		width: 100%;
+		float: left;
+		background-color: #fff;
+	}
+	.pricing_desc_left {
+		width: 30%;
+		margin-left: 15%;
+		float: left;
+		margin-bottom: 15px;
+	}
+	.pricing_desc_right {
+		width: 40%;
+		margin-left: 5%;
+		float: left;
+		margin-bottom: 15px;
+	}
+}
+
+// Table in Modal window
+.pricing {}
+
+// The Table itself
+
+.pricing_table {
+	width: 100%;
+	padding: 10px;
+	margin: 0 auto;
+
+	.pricing_table_header {
+		background-color: #fff;
+		margin: 0;
+	}
+
+	.left_table {
+		background-color: #fff;
+		text-align: right;
+		width: 15%;
+	}
+	tr {
+		td {
+			font-size: 16px;
+			text-align: center;
+			padding: 10px 5px;
+		}
+	}
+}
+// Features => 'shared/features'
+.features {
+	padding-top: 20px;
+	clear: both;
+
+	.feature {
+		float:left;
+		width: 20%;
+		margin-left:5%;
+	}
+}
+
+// Customer Quotes => 'shared/customer_quotes'
+.customer_quotes {
+	padding-top: 20px;
+	clear: both;
+}
+
+// Footer => 'shared/footer'
+.footer {
+	clear: both;
+	margin-top:20px;
+	width: 100%;
+	background-color: #464646;
+	.footer_info {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+}
+
+// Errors => 'shared/errors'
+.notice, .alert {
+	margin: 0;
+}
+
+.preview_button {
+	text-decoration: none;
+	font-size: 18px;
+	font-weight: bold;
+	margin: 2%;
+
+	span {
+		padding: 15px;
+		text-align: center;
+		display: block;
+		background-color: $primary_color;
+		color: #fff;
+		border: 2px solid #464646;
+		border-radius: 20px;
+		display: block;
+	}
+}
+.preview_button:hover {
+	span {
+		border: 2px solid $primary_color;
+	}
+}

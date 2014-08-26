@@ -1,4 +1,5 @@
 OctomobiRails::Application.routes.draw do
+  get "sessions/create"
 	##
 	#	Routes for 'm.octomobi.com'
 	#	Routes here will render the user-created mobile sites
@@ -20,7 +21,8 @@ OctomobiRails::Application.routes.draw do
 		devise_for :admins
 	end
 	
-	devise_for :customers, path: "user"
+	devise_for :customers, path: "user", controllers:  {registrations: 'registrations', 
+											sessions: 'sessions'}
 
 	resources :site_creator, only: [:new, :create, :edit, :update, :destroy]
 

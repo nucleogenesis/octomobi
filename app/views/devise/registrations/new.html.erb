@@ -1,18 +1,36 @@
-<h2>Sign up</h2>
+<section class="registration_page">
+	<section class="registration_info">
+		<h2>Begin Your 30 Day Free Trial Today!</h2>
+		<h3>Gain Access to the Powerful Features of Octomobi</h3>		
+	</section>
+	<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+		<h2>Sign up</h2>
+		<%= devise_error_messages! %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= devise_error_messages! %>
+		<div class="form_element">
+			<%= f.label :first_name %>:
+			<%= f.text_field :first_name, autofocus: true %>
+		</div>
+		<div class="form_element">
+			<%= f.label :last_name %>:
+			<%= f.text_field :last_name %>
+		</div>
+		<div class="form_element"><%= f.label :email %>
+		<%= f.email_field :email, autofocus: true %></div>
 
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email, autofocus: true %></div>
+		<div class="form_element"><%= f.label :password %>
+		<%= f.password_field :password, autocomplete: "off" %></div>
 
-  <div><%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "off" %></div>
+		<div class="form_element"><%= f.label :password_confirmation %>
+		<%= f.password_field :password_confirmation, autocomplete: "off" %></div>
 
-  <div><%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
+		<div class="form_button"><%= f.submit "Sign up" %></div>
+		<div class="form_links">
+		<%= link_to "Sign in", new_session_path(resource_name), html: {class: "form_button"}%>
+		<br />
+		<%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %>
+		</div>
 
-  <div><%= f.submit "Sign up" %></div>
-<% end %>
+	<% end %>
 
-<%= render "devise/shared/links" %>
+</section>

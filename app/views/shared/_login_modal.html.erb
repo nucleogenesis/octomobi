@@ -1,0 +1,56 @@
+<div class="login_modal">
+	<div class="login_info">
+		<%= form_for(:customer, url: new_customer_session_path, html: {class: "login"}) do |f| %>
+			<h2>Sign In to Access Your Account</h2>
+			<div class="form_element">
+				<%= f.label :email %>:
+				<%= f.email_field :email %>
+			</div>
+			<div class="form_element">
+				<%= f.label :password %>:
+				<%= f.password_field :password %>
+			</div>
+			<div id="login_button" class="form_button"><%= f.submit "Log In" %></div>
+		<% end %>
+	</div>
+	<a href="#"><div class="sign_in_close">Close</div></a>
+</div>
+
+<script>
+$(document).ready(function() {
+	// When the link is clicked.
+	$('#header_sign_in').click(function(e) {
+
+		e.preventDefault();
+
+		// Prepare the Mask Styles
+		var maskWidth = $(window).width();
+		var maskHeight = $(document).height();
+
+		$('.mask').css({'width':maskWidth, 'height':maskHeight});
+
+		// Transition Effect
+		$('.mask').fadeIn(500);
+		$('.mask').fadeTo("slow", 0.6);
+
+		var winH = $(window).height();
+		var winW = $(window).width();
+
+		$('.login_modal').css({'top': '78px'});
+		$('.login_modal').css({'right': '10px'});
+
+		$('.login_modal').slideDown(800);
+
+		// Get Rid of It
+		$('.mask').click(function(e) {
+			$('.login_modal, .mask').fadeOut(500);
+		});
+
+		$('.sign_in_close').click(function(e) {
+			e.preventDefault();
+
+			$('.login_modal, .mask').fadeOut(500);
+		});
+	});
+});	
+</script>

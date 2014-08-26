@@ -1,7 +1,9 @@
 <!-- shared/home_header | rendered in layouts/application -->
 <header class="home_header">
 	<nav class="main_nav">
-		<%= image_tag "logo.png", alt: "Octomobi Logo" %>
+		<%= link_to root_path do %>
+			<%= image_tag "logo.png", alt: "Octomobi Logo" %>
+		<% end %>
 		<ul>
 			<li><%= link_to "Home", root_path %></li>
 			<li><%= link_to "Pricing", request.original_url + "#pricing" %></li>

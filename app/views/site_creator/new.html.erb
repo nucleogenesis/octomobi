@@ -1,3 +1,7 @@
+<% if !customer_signed_in? %>
+	<%= render :partial => 'shared/sign_up_modal' %>
+<% end %>
+
 <h1>Octomobi Site Creator</h1>
 <h3>Create your new Mobile Website!</h3>
 

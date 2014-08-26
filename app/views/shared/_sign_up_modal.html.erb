@@ -1,5 +1,120 @@
+<!-- Modal Box HTML -->
+<div class="register_modal">
+	<a href=""><div class="close">x</div></a>
+	<div class="register_modal_info">
+		<%= form_for(:customer, 
+					url: customer_registration_path,
+					format: :json,
+					html: {class: 'register'},
+					remote: true ) do |f| %>
+
+			<h2>Sign Up Now for a 24 Hour Preview of Octomobi!</h2>
+			<p class="alert"></p>
+			<div class="form_element">
+				<%= f.label :first_name %>:
+				<%= f.text_field :first_name, autofocus: true %>
+			</div>
+			<div class="form_element">
+				<%= f.label :last_name %>:
+				<%= f.text_field :last_name %>
+			</div>
+			<div class="form_element">
+				<%= f.label :email %>:
+				<%= f.email_field :email %>
+			</div>
+			<div class="form_element">
+				<%= f.label :password %>:
+				<%= f.password_field :password %>
+			</div>
+			<div class="form_element">
+				<%= f.label :password_confirmation %>:
+				<%= f.password_field :password_confirmation %>
+			</div>
+			<div id="register_button" class="form_button"><%= f.submit "Sign up" %></div>
+		<% end %>
+		<%= form_for(:resource, 
+					 url: session_path(resource_name),
+					 format: :json,
+					 html: {class: "login"},
+					 remote: true )	 do |f| %>
+
+			<h2>Have an Account? Sign In Below</h2>
+			<p class="alert"></p>
+			<div class="form_element">
+				<%= f.label :email %>:
+				<%= f.email_field :email %>
+			</div>
+			<div class="form_element">
+				<%= f.label :password %>:
+				<%= f.password_field :password %>
+			</div>
+			<div id="login_button" class="form_button"><%= f.submit "Log In" %></div>
+		<% end %>
+	</div>
+</div>
+
+<!-- Modal Box Script -->
 <script>
 	$( document ).ready(function() {
-		$("#register_modal").append("<%=j render :partial => 'shared/header' %>");
+		//Get the screen height and width
+		var maskHeight = $(document).height();
+		var maskWidth = $(window).width();
+
+		//Set height and width to mask to fill up the whole screen
+		$('.mask').css({'width':maskWidth, 'height':maskHeight});
+
+		//transition effect        
+		$('.mask').fadeIn(1000);    
+		$('.mask').fadeTo("slow",0.8);    
+
+		//Get the window height and width
+		var winH = $(window).height();
+		var winW = $(window).width();
+
+		//Set the popup window to center
+		$('.register_modal').css('top',  winH/2-$('.register_modal').height()/2);
+		$('.register_modal').css('left', winW/2-$('.register_modal').width()/2);
+
+		//transition effect
+		$('.register_modal').fadeIn(2000); 
+
+		// Close the Box
+
+		// Close the Box and Go Back
+		$('.close').click(function(e) {
+			e.preventDefault();
+			// Send the user back (like back button)
+			$('.register_modal').fadeOut(1000);
+			setTimeout(function(){
+				parent.history.back()}, 1000);
+		});
+
+		// AJAX HERE TO MAKE THE LOGIN/REGISTER SUPER SWEET
+		$('.login').bind("ajax:success", function(e, data, status, xhr) {
+			console.log(data);
+			if(data.success) {
+				$('.register_modal').fadeOut(1000);
+			}else{
+				$('.login .alert').append(data.errors);
+			}
+		});
+
+		$('.register').bind("ajax:success", function(e, data, status, xhr) {
+			console.log(data);
+			if(data.success) {
+				$('.register_modal').fadeOut(1000);
+			}else{
+				$('.register .alert').empty();
+				var errors = "";
+				/*
+				for(var key in data.errors) {
+					if(data.errors.hasOwnProperty(key)) {
+						errors += "<span>"+key+' '+data.errors[key]+"</span>";
+					}
+				}
+				*/
+				$('.register .alert').append("Failed to register, please provide valid information");
+			}
+		});
 	});
 </script>

@@ -13,6 +13,12 @@ html, body {
 	width: 100%;
 }
 
+.content {
+	max-width: 1000px;
+	width: 100%;
+	margin: 0 auto;
+}
+
 // Header => 'shared/header'
 
 // Site-Wide Header
@@ -105,20 +111,59 @@ html, body {
 		color: #fff;
 	}
 	a:hover {
-		color: $primary_color;
+		opacity: 0.8;
 	}
 }
 
 // Pricing Table => 'shared/pricing'
 
+// Price Divs
+
+.basic_price_box {
+	max-width: 1000px;
+	min-height:400px;
+	padding:2%;
+	width: 100%;
+	height: 100%;
+	background: $primary_color;
+	
+	.price_feature_list {
+		width: 15%;
+		height: 100%;
+		float:left;
+		padding: 3%;
+
+		.price_empty {
+			padding: 30px;
+			border: none;
+		}
+		.price_feature {
+			padding: 30px;
+			border: 3px solid #fff;
+		}
+	}
+
+	.price_compare_list {
+		width: 31%;
+		height: 100%;
+		float:right;
+		padding: 2%;
+		margin-left:3%;
+
+		.price_compare {
+			padding: 30px;
+			border: 3px solid #fff;
+		}
+	}
+}
+
 // Table on Home Page
 .home_pricing {
 	width: 100%;
 	clear: both;
-	background-color: $primary_color;
+	background-color: #fff;
 	h2 {
-		padding: 20px 0;
-		margin: 0;
+		margin: 20px 0;
 		background-color: #fff;
 	}
 	h4, p {
@@ -131,7 +176,7 @@ html, body {
 		background-color: #fff;
 	}
 	.pricing_desc_left {
-		width: 30%;
+		width: 40%;
 		margin-left: 15%;
 		float: left;
 		margin-bottom: 15px;
@@ -153,22 +198,34 @@ html, body {
 	width: 100%;
 	padding: 10px;
 	margin: 0 auto;
+	border: 15px solid $primary_color;
+	border-collapse: collapse;
+	padding: 10px;
 
 	.pricing_table_header {
 		background-color: #fff;
+		border-bottom: 5px solid $primary_color;
+		height: 50px;
 		margin: 0;
 	}
 
 	.left_table {
 		background-color: #fff;
-		text-align: right;
+		text-align: center;
+		font-size: 16px;
+		font-weight: bold;
+		border-right: 5px solid $primary_color;
+		border-bottom: none;
+		border-top: none;
 		width: 15%;
 	}
 	tr {
+		border-bottom: 2px solid $primary_color;
 		td {
 			font-size: 16px;
 			text-align: center;
 			padding: 10px 5px;
+			border-right: 2px solid $primary_color;
 		}
 	}
 }
@@ -190,17 +247,6 @@ html, body {
 	clear: both;
 }
 
-// Footer => 'shared/footer'
-.footer {
-	clear: both;
-	margin-top:20px;
-	width: 100%;
-	background-color: #464646;
-	.footer_info {
-		max-width: 1000px;
-		margin: 0 auto;
-	}
-}
 
 // Errors => 'shared/errors'
 .notice, .alert {
@@ -228,4 +274,200 @@ html, body {
 	span {
 		border: 2px solid $primary_color;
 	}
+}
+// Modal Box Styles
+	/* Z-index of #mask must lower than #boxes .window */
+.mask {
+	position:absolute;
+	z-index:9000;
+	background-color:#000;
+	display:none;
+	top: 0;
+	left: 0;
+}
+
+.register_modal {
+	background: #fff;
+	border: 10px solid $primary_color;
+	padding: 20px;
+	position:fixed;
+	width:750px;
+	height:380px;
+	display:none;
+	z-index:9999;
+	padding:20px;
+
+}
+
+
+/* Customize your modal window here, you can add background image too */
+.register_modal_info {
+
+	margin: 0;
+	width:100%; 
+	height:100%;
+	.register {
+		width: 60%;
+		float: left;
+		.form_element {
+			margin: 25px 0;
+			
+			input {
+				padding: 2px 10px;
+				border-radius: 10px;
+				border: 1px solid black;
+				height: 20px;
+				width: 200px;
+				float: right;
+			}
+		}
+	}
+	.login {
+		width: 35%;
+		margin-left:5%;
+		float:left;
+		.form_element {
+			margin: 25px 0;
+			
+			input {
+				border-radius: 10px;
+				border: 1px solid black;
+				height: 20px;
+				width: 150px;
+				float: right;
+			}
+		}
+	}
+	.form_button {
+		margin: 0 auto;
+		width: 175px;
+		height: 30px;
+		
+		input {
+			background-color: $primary_color;
+			width: 100%;
+			height: 100%;
+			border-radius: 10px;
+			border: 1px solid $primary_color;
+			padding: 5px 20px;
+			margin: 0 auto;
+			color: white;
+			font-size: 16px;
+			font-weight: bold;
+		}
+	}
+	.form_button:hover {
+		opacity: 0.8;
+	}
+}
+
+.login_modal {
+	padding: 15px;
+	display: none;
+	width: 300px;
+	height: 265px;
+	background: $primary_color;
+	z-index: 9999;
+	position:absolute;
+
+	.login_info {
+		padding: 15px;
+		background-color: #fff;
+	}
+}
+.form_element {
+	margin: 25px 0;
+	font-size: 16px;
+	font-weight: bold;
+	
+	input {
+		margin: -6px 0;
+		padding: 2px 10px;
+		border-radius: 10px;
+		border: 1px solid black;
+		height: 20px;
+		width: 150px;
+		float: right;
+	}
+}
+.form_button {
+	margin: 0 auto;
+	width: 175px;
+	height: 30px;
+	
+	input {
+		background-color: $primary_color;
+		width: 100%;
+		height: 100%;
+		border-radius: 10px;
+		border: 1px solid $primary_color;
+		padding: 5px 20px;
+		margin: 0 auto;
+		color: white;
+		font-size: 16px;
+		font-weight: bold;
+	}
+}
+.form_button:hover {
+	opacity: 0.8;
+}
+
+.close {
+	width: 30px;
+	height: 30px;
+	border-radius: 50px;
+	border: 2px solid #fff;
+	background: $primary_color;
+	top: -15px;
+	right: -15px;
+	color: #fff;
+	text-align: center;
+	line-height: 1.2em;
+	font-size: 22px;
+	font-weight: bold;
+	position: absolute;
+}
+.close:hover {
+	opacity: 0.8;
+}
+
+.sign_in_close {
+	text-align: center;
+	font-size: 16px;
+	line-height:1.7em;
+}
+
+
+// Footer => 'shared/footer'
+.footer {
+	clear: both;
+	width: 100%;
+	height: 145px;
+	padding: 10px 0;
+	background-color: #464646;
+
+	.footer_info {
+		max-width: 1000px;
+		width: 100%;
+		margin: 0 auto;
+	}
+	.footer_links {
+		margin: 0;
+		width: 25%;
+		height: 100%;
+		float: left;
+	}
+	.footer_copyright {
+		margin:0;
+		width: 25%;
+		height: 100%;
+		float: right;
+	}
+}
+
+
+// Bottom Padding 
+.footer_buffer {
+	clear: both;
+	height:30px;
 }

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140826055904) do
+ActiveRecord::Schema.define(version: 20140826205656) do
 
   create_table "admins", force: true do |t|
     t.string   "first_name",             default: "", null: false
@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(version: 20140826055904) do
     t.datetime "confirmation_sent_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "customer_ref"
+    t.string   "fastspring_referral"
   end
 
   add_index "customers", ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true

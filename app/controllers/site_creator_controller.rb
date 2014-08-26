@@ -6,7 +6,7 @@ class SiteCreatorController < ApplicationController
 		@customer = current_customer
 		@site = Site.new
 
-		if !@customer.subscription || !@customer.subscription.is_active
+		if !@customer.subscription && !@customer.fastspring_referral
 			@preview = true
 		else
 			@preview = false
@@ -14,6 +14,7 @@ class SiteCreatorController < ApplicationController
 	end
 
 	def create
+		## ADD CODE TO HANDLE PREVIEW ##
 		@site = Site.new(site_creator_params)
 		@features = params[:features].to_hash
 

@@ -1,15 +1,73 @@
 <section class="site_creator">
 	<div class="creator">
-		<div class="toolbox">
-			Toolbox
-		</div>
-		<div class="feature_list">
-			Feature List
+		<div class="tabs">
+			<div class="templates-tab">
+				<div>Template #1</div>
+				<div>Template #2</div>
+			</div>
+			<div class="features-tab">
+				<div class="toolbox">
+					Toolbox
+				</div>
+				<div class="feature_list">
+					Feature List
+				</div>
+			</div>
+			<div class="summary_tab">
+				<div>Custom URL</div>
+				<div>Save Site</div>
+			</div>
 		</div>
 		<div class="mobile_preview">
 			Mobile Preview
 		</div>
 	</div>
-
 </section>
 
+<script>
+$( document ).ready(function() {
+	// The application will require a certain set of things to maintain the
+	// application's ability to update itself, keep track of variables and
+	// more.
+
+	// Establish jQuery draggables for each itme under '.toolbox'
+
+
+	// Establish an ordering window for them to be dragged into
+	// -> Keep the order of each object by managing its position in an object $features
+	//    This $features object will be perfect for sending to the server because the
+	//	  controller is setup to parse what is essentially JSON as Ruby Hashes
+
+
+	// Handle Modal Options Windows for each Feature (ie: partials to be rendered as 
+	// necessary for the settings. 
+
+
+	// Handle Saving a New Site, Updating an Old Site
+	// !!!!!!!!!! Handle CRUD for Preview Sites !!!!!!!!!!!!!!
+
+
+	// Handle Updating the look and feel of the Mobile Preview Site
+
+
+	// Handle premature exiting-- prompt to save or lose changes
+
+
+	// --------------- Calls to Controllers ---------------//
+	// @preview = true  --> indicating unsubscribed user
+	// site_creator#create post: @site, @features
+	// @site has preview_url --> indicating temporary nature
+	// ^^ Summary Tab Custom: Includes preview url, call to action
+	//    to sign up for 30 Day Free Trial.
+	//	  !!! Setup mailer to send out information about prevew
+	//		  and more sales material
+	// 
+	// @preview = false --> indicating a subscribed user
+	// current_url == /site_creator/new
+	// site_creator#create post: @site, @features
+	// 
+	// @preview = false --> indicating a subscribed user
+	// current_url == /site_creator/edit/:id
+	// site_Creator#update post: site_id, @site, @features
+});
+</script>

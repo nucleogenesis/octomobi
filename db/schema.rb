@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140826013940) do
+ActiveRecord::Schema.define(version: 20140826055904) do
 
   create_table "admins", force: true do |t|
     t.string   "first_name",             default: "", null: false
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20140826013940) do
     t.datetime "confirmation_sent_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "customer_ref"
   end
 
   add_index "customers", ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
@@ -134,6 +135,15 @@ ActiveRecord::Schema.define(version: 20140826013940) do
     t.integer  "amount"
     t.boolean  "successful"
     t.string   "coupon_code"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "products", force: true do |t|
+    t.string   "name"
+    t.string   "reference"
+    t.integer  "price"
+    t.string   "payment_period"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

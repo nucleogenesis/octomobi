@@ -1,0 +1,45 @@
+validate_subscription
+	tests api-key against FastSpring database to validate sub-type
+		site_creator#new
+		site_creator#edit
+		site_creator#create
+		site_creator#update
+	
+	if invalid
+		deactivate_unsubscribed
+			# deactivates all sites attached to customer
+		return to reactivation page (pricing page, sub selector)
+
+##CHECKOUT##
+Choose Option Page (various)
+	- Home Page Pricing
+	- Site Creator (Preview Only)
+	- From Email/Other Sources
+to:	checkout#review get product_reference, customer_referrence
+		yes/no?
+no:			return to home-page (possibly update with sales pitch)
+yes:		send to FastSpring
+				FastSpring CallBack :: checkout#process
+					create subscription
+					create payment
+to:	checkout#final
+	- Account Information
+	- Next Payment Due
+	- Expiry Date
+	- Link to Dashboard
+	- Link to Create a New or Edit a Previously Previewed Site
+
+
+##SITE CREATOR##
+
+site_creator#edit
+
+IF site has preview url && user subscribed
+	- Initiate creation of custom URL for site
+ELSE
+	-render the page normally with the site details
+
+
+	
+					
+	

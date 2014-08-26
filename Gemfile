@@ -18,6 +18,10 @@ gem 'jquery-ui-rails'
 
 gem 'turbolinks'
 
+# Fastspring Payment Processor Gem & Dependencies
+gem 'FastSpring'
+gem 'httparty'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 

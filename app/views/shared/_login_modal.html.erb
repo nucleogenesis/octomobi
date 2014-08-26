@@ -1,6 +1,9 @@
 <div class="login_modal">
 	<div class="login_info">
-		<%= form_for(:customer, url: new_customer_session_path, html: {class: "login"}) do |f| %>
+		<%= form_for(resource, as: resource_name, url: session_path(resource_name), 
+					 html: {class: "login"}, 
+					 format: :json,
+					 remote: true ) do |f| %>
 			<h2>Sign In to Access Your Account</h2>
 			<div class="form_element">
 				<%= f.label :email %>:
@@ -51,6 +54,16 @@ $(document).ready(function() {
 
 			$('.login_modal, .mask').fadeOut(500);
 		});
+
+		// AJAX Stuff Now
+		$('form .login').bind("ajax:success", function(e, data, status, xhr) {
+			if(data.success) {
+				location.reload();
+			}else{
+				console.log(data);
+			}
+		});
+
 	});
 });	
 </script>

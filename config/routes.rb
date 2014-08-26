@@ -1,5 +1,4 @@
 OctomobiRails::Application.routes.draw do
-  get "sessions/create"
 	##
 	#	Routes for 'm.octomobi.com'
 	#	Routes here will render the user-created mobile sites

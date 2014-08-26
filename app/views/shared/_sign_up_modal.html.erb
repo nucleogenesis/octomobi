@@ -3,7 +3,7 @@
 	<a href=""><div class="close">x</div></a>
 	<div class="register_modal_info">
 		<%= form_for(:customer, 
-					url: customer_registration_path,
+					url: registration_path(resource_name),
 					format: :json,
 					html: {class: 'register'},
 					remote: true ) do |f| %>
@@ -56,65 +56,69 @@
 <!-- Modal Box Script -->
 <script>
 	$( document ).ready(function() {
-		//Get the screen height and width
-		var maskHeight = $(document).height();
-		var maskWidth = $(window).width();
-
-		//Set height and width to mask to fill up the whole screen
-		$('.mask').css({'width':maskWidth, 'height':maskHeight});
-
-		//transition effect        
-		$('.mask').fadeIn(1000);    
-		$('.mask').fadeTo("slow",0.8);    
-
-		//Get the window height and width
-		var winH = $(window).height();
-		var winW = $(window).width();
-
-		//Set the popup window to center
-		$('.register_modal').css('top',  winH/2-$('.register_modal').height()/2);
-		$('.register_modal').css('left', winW/2-$('.register_modal').width()/2);
-
-		//transition effect
-		$('.register_modal').fadeIn(2000); 
-
-		// Close the Box
-
-		// Close the Box and Go Back
-		$('.close').click(function(e) {
+		$('.preview_button').click(function(e) {
 			e.preventDefault();
-			// Send the user back (like back button)
-			$('.register_modal').fadeOut(1000);
-			setTimeout(function(){
-				parent.history.back()}, 1000);
-		});
 
-		// AJAX HERE TO MAKE THE LOGIN/REGISTER SUPER SWEET
-		$('.login').bind("ajax:success", function(e, data, status, xhr) {
-			console.log(data);
-			if(data.success) {
-				$('.register_modal').fadeOut(1000);
-			}else{
-				$('.login .alert').append(data.errors);
-			}
-		});
+			//Get the screen height and width
+			var maskHeight = $(document).height();
+			var maskWidth = $(window).width();
 
-		$('.register').bind("ajax:success", function(e, data, status, xhr) {
-			console.log(data);
-			if(data.success) {
-				$('.register_modal').fadeOut(1000);
-			}else{
-				$('.register .alert').empty();
-				var errors = "";
-				/*
-				for(var key in data.errors) {
-					if(data.errors.hasOwnProperty(key)) {
-						errors += "<span>"+key+' '+data.errors[key]+"</span>";
-					}
+			//Set height and width to mask to fill up the whole screen
+			$('.mask').css({'width':maskWidth, 'height':maskHeight});
+
+			//transition effect        
+			$('.mask').fadeIn(1000);    
+			$('.mask').fadeTo("slow",0.8);    
+
+			//Get the window height and width
+			var winH = $(window).height();
+			var winW = $(window).width();
+
+			//Set the popup window to center
+			$('.register_modal').css('top',  winH/2-$('.register_modal').height()/2);
+			$('.register_modal').css('left', winW/2-$('.register_modal').width()/2);
+
+			//transition effect
+			$('.register_modal').fadeIn(2000); 
+
+			// Close the Box
+
+			// Close the Box and Go Back
+			$('.close, .mask').click(function(e) {
+				e.preventDefault();
+				// Send the user back (like back button)
+				$('.register_modal, .mask').fadeOut(1000);
+			});
+
+			// AJAX HERE TO MAKE THE LOGIN/REGISTER SUPER SWEET
+			$('.login').bind("ajax:success", function(e, data, status, xhr) {
+				console.log(data);
+				if(data.success) {
+					$('.register_modal, .mask').fadeOut(1000);
+					location.reload();
+				}else{
+					$('.login .alert').append(data.errors);
 				}
-				*/
-				$('.register .alert').append("Failed to register, please provide valid information");
-			}
+			});
+
+			$('.register').bind("ajax:success", function(e, data, status, xhr) {
+				console.log(data);
+				if(data.success) {
+					$('.register_modal, .mask').fadeOut(500);
+					window.location.replace("<%=j new_site_creator_path %>");
+				}else{
+					$('.register .alert').empty();
+					var errors = "";
+					/*
+					for(var key in data.errors) {
+						if(data.errors.hasOwnProperty(key)) {
+							errors += "<span>"+key+' '+data.errors[key]+"</span>";
+						}
+					}
+					*/
+					$('.register .alert').append("Failed to register, please provide valid information");
+				}
+			});
 		});
 	});
 </script>

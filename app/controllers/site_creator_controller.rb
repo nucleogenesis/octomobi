@@ -1,11 +1,16 @@
 class SiteCreatorController < ApplicationController
-	before_action :authenticate_customer!, :except => [:new]
+	before_action :authenticate_customer!
 	before_action :authenticate_site_ownership, :only => [:edit, :update, :destroy]
 
 	def new
-		# Just renders site_creator/new.html.erb
-		# which then renders the html/javascript
-		# that runs the site-creator app
+		@customer = current_customer
+		@site = Site.new
+
+		if !@customer.subscription || !@customer.subscription.is_active
+			@preview = true
+		else
+			@preview = false
+		end
 	end
 
 	def create

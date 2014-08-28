@@ -3,27 +3,156 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .site_creator {
+	max-width: 1000px;
+	width: 100%;
+
 	.creator {
-		width: 100%;
-		height: 100%;
+		width: 70%;
+		float: left;
 		
-		.toolbox {
-			float: left;
-			width: 30%;
-			height: 100%;
+
+		.progress_tabs {
+			width: 100%;
+			height:70px;
+
+			ul { 
+				list-style-type: none;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+			}
+			li { 
+				display: inline-block; 
+				width: 33%;
+				float: left;
+			}
+
+			.tab {
+				width: 33%;
+				height: 100%;
+				float: left;
+				margin: 0 auto;
+				background: yellow;
+				border-top-left-radius: 10px;
+				border-top-right-radius: 10px;
+			}
+			.tab:active {
+				background: #464646;
+				border: 1px solid #000;
+			}
 		}
-		
-		.feature_list {
-			float:left;
-			width: 30%;
-			height: 100%;
+
+		.tabs {
+			width: 100%;
+			height: 400px;
+			clear: both;
+			float: left;
+			background: gray;
+
+			.templates {
+				display: none;
+				width: 100%;
+				height: 100%;
+				min-height: 400px;
+				padding: 10px;
+
+				.template {
+					width: 75px;
+					height: 100px;
+					float: left;
+					margin: 20px;
+					background: pink;
+				}
+			}
+			.features {
+				float: right;
+				display: none;
+				width: 100%;
+				height: 100%;
+				
+				.toolbox { 
+					width: 50%;
+					margin: 0;
+					float:left;
+					
+					.tool_info {
+						width: 100%;
+						height: 120px;
+						padding: 10px;
+						margin: 0;
+						background: brown;
+					}
+					
+					.tool_list {
+						width: 100%;
+						height: 240px;
+						padding: 10px;
+						margin: 0;
+						background: purple;
+
+						img {
+							width: 100px;
+							height: 50px;
+						}
+
+						.tool_feature { 
+							width: 100px;
+							height: 50px;
+							float: left;
+							margin: 5px;
+							padding: 5px;
+							border-radius: 10px;
+							background: pink;
+						}
+					}
+				}
+
+				.list {
+					width: 45%;
+					height: 380px;
+					float:right;
+					padding: 10px;
+					margin: 0;
+					background:white;
+					
+					.trash {
+						height: 25px;
+						width: 100%;
+						background: brown;
+					}
+
+					.feature_list {
+						height: 350px;
+						width: 100%;
+
+						.feature_list_item {
+								width: 96%;
+								height: 33px;
+								margin: 5px auto;
+								background: blue;
+								padding: 1%;
+
+								span {
+									float: right;
+								}
+							}
+						}
+					}
+				.summary {
+					display: none;
+					width: 100%;
+					height: 400px;
+					background: blue;
+				}
+					
+			}
 		}
 
 		.mobile_preview {
-			float:left;
-			width: 40%;
-			height: 100%;
+			width: 30%;
+			height: 470px;
+			float: right;
+			background: orange;
 		}
 	}
 }
-

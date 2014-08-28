@@ -14,21 +14,32 @@ OctomobiRails::Application.routes.draw do
 	#	including the Admin scope, site-creator (preview and main), and user
 	#	management
 	## 
+	
+	# Home Page
 	root to: "home_page#index"
 
+	# Admin Section
 	scope :admin do
 		devise_for :admins
 	end
-	
-	devise_for :customers, path: "user", controllers:  {registrations: 'registrations', 
-											sessions: 'sessions'}
 
+	# Customer Sessions & Registrations For Custom Controllers
+	devise_for :customers, path: "user", controllers:  {registrations: 'registrations', 
+													 sessions: 'sessions'}
+	#Site Creator (Preview / Production)
 	resources :site_creator, only: [:new, :create, :edit, :update, :destroy]
+	resources :site_creator_preview, only: [:new, :create]
+
+	# Pages (Retail & Reseller Pricing)
+	match '/pages/pricing', to: 'pages#retailer_pricing', via: :get,
+		as: 'retail_pricing'
+	match '/pages/reseller-pricing', to: 'pages#reseller_pricing', via: :get, 
+		as: 'reseller_pricing'
 
 	resources :subscriptions
 
 	match '/user/dashboard',	to: 'customers#dashboard', via: :get, as: 'customer_dashboard'
 
 
-		
+
 end

@@ -1,0 +1,2 @@
+      invoke  active_record
+      create    db/migrate/20140826232701_add_customer_type_to_customers.rb

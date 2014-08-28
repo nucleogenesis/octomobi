@@ -33,6 +33,7 @@
 			<div id="register_button" class="form_button"><%= f.submit "Sign up" %></div>
 		<% end %>
 		<%= form_for(:resource, 
+					 as: resource_name,
 					 url: session_path(resource_name),
 					 format: :json,
 					 html: {class: "login"},
@@ -95,7 +96,7 @@
 				console.log(data);
 				if(data.success) {
 					$('.register_modal, .mask').fadeOut(1000);
-					location.reload();
+					window.location.replace("<%=j customer_dashboard_path %>");
 				}else{
 					$('.login .alert').append(data.errors);
 				}
@@ -105,7 +106,7 @@
 				console.log(data);
 				if(data.success) {
 					$('.register_modal, .mask').fadeOut(500);
-					window.location.replace("<%=j new_site_creator_path %>");
+					window.location.replace("<%=j new_site_creator_preview_path %>");
 				}else{
 					$('.register .alert').empty();
 					var errors = "";

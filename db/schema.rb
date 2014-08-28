@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140826205656) do
+ActiveRecord::Schema.define(version: 20140827023712) do
 
   create_table "admins", force: true do |t|
     t.string   "first_name",             default: "", null: false
@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 20140826205656) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "fastspring_referral"
+    t.string   "customer_type"
   end
 
   add_index "customers", ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
@@ -90,6 +91,15 @@ ActiveRecord::Schema.define(version: 20140826205656) do
     t.datetime "updated_at"
     t.integer  "site_id"
     t.integer  "order"
+  end
+
+  create_table "features", force: true do |t|
+    t.string   "title"
+    t.string   "image"
+    t.boolean  "is_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "css_id"
   end
 
   create_table "gallery_images", force: true do |t|
@@ -160,16 +170,16 @@ ActiveRecord::Schema.define(version: 20140826205656) do
 
   create_table "sites", force: true do |t|
     t.integer  "customer_id"
-    t.string   "basic_redirect"
-    t.string   "pro_redirect"
     t.string   "google_analytics_api_key"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "title"
     t.string   "desktop_site_url"
-    t.string   "logo_location"
     t.boolean  "is_active"
-    t.string   "preview_url"
+    t.string   "slug"
+    t.string   "logo_url"
+    t.string   "site_type"
+    t.string   "template"
   end
 
   create_table "social_links_features", force: true do |t|

@@ -44,23 +44,19 @@ $(document).ready(function() {
 
 		$('.login_modal').slideDown(800);
 
-		// Get Rid of It
-		$('.mask').click(function(e) {
+		// Get Rid of It (No Sign In)
+		$('.sign_in_close, .mask').click(function(e) {
 			$('.login_modal, .mask').fadeOut(500);
 		});
 
-		$('.sign_in_close').click(function(e) {
-			e.preventDefault();
-
-			$('.login_modal, .mask').fadeOut(500);
-		});
-
-		// AJAX Stuff Now
+		// AJAX Stuff (Redirect to Dashboard)
 		$('form .login').bind("ajax:success", function(e, data, status, xhr) {
 			if(data.success) {
-				location.reload();
+				window.location.replace("<%=j customer_dashboard_path %>");
 			}else{
 				console.log(data);
+				alert("Unable to Log In, Please Sign Up if You Haven't Already or Contact the Administrator");
+				location.reload();
 			}
 		});
 

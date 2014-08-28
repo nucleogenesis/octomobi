@@ -5,16 +5,14 @@ class SiteCreatorController < ApplicationController
 	def new
 		@customer = current_customer
 		@site = Site.new
-
-		if !@customer.subscription && !@customer.fastspring_referral
-			@preview = true
-		else
-			@preview = false
+		@active_features = Feature.all.where(is_active: true)
+		@feature_ids = []
+		@active_features.each do |f|
+			@feature_ids.push(f.css_id)
 		end
 	end
 
 	def create
-		## ADD CODE TO HANDLE PREVIEW ##
 		@site = Site.new(site_creator_params)
 		@features = params[:features].to_hash
 
@@ -65,10 +63,10 @@ class SiteCreatorController < ApplicationController
 
 	private
 	def site_creator_params
-		params.require(:site).permit(:id, :title, :basic_redirect, 
-									:pro_redirect, :desktop_site_url, 
-									:google_analytics_api_key, :logo_location,
-									:preview_url, :customer_id)
+		params.require(:site).permit(:id, :title, :desktop_site_url, 
+									:google_analytics_api_key, :logo_url,
+									:site_type, :customer_id, :slug, 
+									:template)
 	end
 
 	def save_features(features, site_id)

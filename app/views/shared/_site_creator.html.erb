@@ -1,37 +1,155 @@
 <section class="site_creator">
 	<div class="creator">
+		<div class="progress_tabs">
+			<ul>
+				<a href="#templates" id="templates_link"><li class="tab"><div >Templates</div></li></a>
+				<a href="#features" id="features_link"><li class="tab"><div>Features</div></li></a>
+				<a href="#summary" id="summary_link"><li class="tab"><div>Summary</div></li></a>
+			</ul>
+		</div>
 		<div class="tabs">
-			<div class="templates-tab">
-				<div>Template #1</div>
-				<div>Template #2</div>
+			<div class="templates" id="templates">
+				<div class="template">Template #1</div>
+				<div class="template">Template #2</div>
 			</div>
-			<div class="features-tab">
+			<div class="features" id="features">
 				<div class="toolbox">
-					Toolbox
+					<div class="tool_info">
+						Introduction Feature: This is where you introduce...
+					</div>
+					<div class="tool_list">
+						<% @active_features.each do |feature| %>
+							<div class="tool_feature" id="<%= feature.css_id %>">
+								<%= image_tag "#{feature.image}" %>
+							</div>
+						<% end %>
+					</div>
 				</div>
-				<div class="feature_list">
-					Feature List
+				<div class="list">
+					<div class="feature_list">
+						
+					</div>
+					<div class="trash">
+						Drop here to delete item.
+					</div>
 				</div>
 			</div>
-			<div class="summary_tab">
+			<div class="summary" id="summary">
+				<!-- Form including title, slug (defaults), 
+					desktop_site_url, logo upload, 
+					HIDDEN: customer_id, template added 
+					dynamically as the jQuery objects are 
+					manipulated -->
 				<div>Custom URL</div>
 				<div>Save Site</div>
 			</div>
 		</div>
-		<div class="mobile_preview">
-			Mobile Preview
-		</div>
+	</div>
+	<div class="mobile_preview">
+		Mobile Preview
 	</div>
 </section>
 
 <script>
 $( document ).ready(function() {
-	// The application will require a certain set of things to maintain the
-	// application's ability to update itself, keep track of variables and
-	// more.
 
-	// Establish jQuery draggables for each itme under '.toolbox'
+	// If page loads without a tab clicked, #templates is set as the path
+	var currentPath = window.location.pathname;
 
+	// Set default tab when page loads
+	var currentTab = "#templates";
+
+	// Initial Limitations
+	var limitations = {
+		contact: 1,
+		content_page: 10000,
+		external_link: 10000,
+		image_gallery: 1,
+		introduction: 1,
+		rss_feed: 10000,
+		social_link: 1
+	};
+
+	// Add 'basic_limited' limitations if that is the customer type or if it
+	// is a preview session.
+	if(currentPath.match(/\/site_creator_preview\/.+/) != null || "<%=j current_customer.customer_type %>" == "basic_limited") {
+		limitations.content_page = 3;
+		limitations.external_link = 3;
+	}
+
+	// Handle The Hide/Show of Tabs
+	$("#templates_link, #features_link, #summary_link").click(function(e) {
+		e.preventDefault();
+
+		var pathId = "#" + this.id.replace("_link", "");
+		if(pathId != currentTab) {
+			$(currentTab).hide();
+			$(pathId).show();
+			currentTab = pathId;
+		}
+	});
+
+	// Establish jQuery draggables for each item under '.toolbox-tools'
+	<% @feature_ids.each do |id| %>
+		$("#<%=j id %>").draggable({
+			revert: "invalid",
+			connectToSortable: ".feature_list",
+			helper: "clone"
+		});
+	<% end %>
+	
+	// Establish the Sortable Div
+	var id = '';		// Variable Scoping... this variable is needed throughout the sortable callbacks
+	var currentList = [];
+
+	$(".feature_list").sortable({
+		connectWith: ".trash",
+		revert: true,
+		receive: function(event, ui) {
+			id = ui.item[0].id;
+		},
+		update: function(event, ui) {
+			var newClasses = ui.item[0].className.replace("tool_feature", "feature_list_item");
+			ui.item[0].className = newClasses;
+			ui.item[0].id = id;
+
+			currentList = $(".feature_list").sortable("toArray");
+			map = new Object();
+			for(var i = 0; i < currentList.length; i++) {
+				if(map[currentList[i]] != null) {
+					map[currentList[i]] += 1;
+				} else {
+					map[currentList[i]] = 1;
+				}
+			}
+			for(var key in map) {
+				var currentId = "#" + key;
+				if(map[key] == limitations[key]) {
+					$(".tool_list " + currentId).draggable("disable");
+					$(".tool_list " + currentId).css("background", "black");
+				}
+				if(map[key] < limitations[key]) {
+					$(".tool_list " + currentId).draggable("enable");
+					$(".tool_list " + currentId).css("background", "pink");
+				}
+			}
+		}
+	});
+
+	// Delete Items From List
+	$(".trash").sortable({
+		receive: function(event, ui) {
+			if(confirm("Are You Sure?")) {
+				ui.item.remove();
+			} else {
+				ui.item.cancel();
+			}
+		}
+	});
+
+	// Sortable List Helper Functions
+	//
+	// Verify against limitations that currentList 
 
 	// Establish an ordering window for them to be dragged into
 	// -> Keep the order of each object by managing its position in an object $features

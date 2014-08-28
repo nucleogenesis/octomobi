@@ -1,0 +1,23 @@
+// Variables Premade
+var limitations (object including limits per feature, noted by "css_id")
+
+// Set Limitations if Preview || Basic Limited User 
+
+// Handle Tabs
+
+// Setup "tool_list" with draggables for each Feature
+
+// Setup "feature_list" as a sortable
+.ConnectWith 'trash'
+	> get id from item being dragged (ie. Feature.css_id)
+	> update the className of the new object from (tool* to feature*)
+	> update the id for the new object
+	> update the HTML structure of the object to fit better into sortable
+
+// Setup 'trash' as a sortable
+	> Alert the Customer that deletion is permanent
+	> destroy any sortable item recieved
+
+
+		
+

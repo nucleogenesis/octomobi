@@ -5,3 +5,18 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+Feature.create([
+	{title: "Contact", image: "logo.png", is_active: true, 
+	css_id: "contact_feature"},
+	{title: "Content Page", image: "logo.png", is_active: true, 
+	css_id: "content_page_feature"},
+	{title: "External Links", image: "logo.png", is_active: true, 
+	css_id: "external_links_feature"},
+	{title: "Introduction", image: "logo.png", is_active: true, 
+	css_id: "introduction_feature"},
+	{title: "RSS Feed", image: "logo.png", is_active: true, 
+	css_id: "rss_feed_feature"},
+	{title: "Social Links", image: "logo.png", is_active: true, 
+	css_id: "social_links_feature"}])
+

@@ -1,84 +1,77 @@
 <section class="site_creator">
-	<div class="creator">
-		<div class="progress_tabs">
-			<ul>
-				<a href="#templates" id="templates_link"><li class="tab"><div >Templates</div></li></a>
-				<a href="#features" id="features_link"><li class="tab"><div>Features</div></li></a>
-				<a href="#summary" id="summary_link"><li class="tab"><div>Summary</div></li></a>
-			</ul>
-		</div>
-		<div class="tabs">
-			<div class="templates" id="templates">
-				<div class="template">Template #1</div>
-				<div class="template">Template #2</div>
-			</div>
-			<div class="features" id="features">
-				<div class="toolbox">
-					<div class="tool_info">
-						Introduction Feature: This is where you introduce...
-					</div>
-					<div class="tool_list">
-						<% @active_features.each do |feature| %>
-							<div class="tool_feature" id="<%= feature.css_id %>">
-								<%= image_tag "#{feature.image}" %>
+
+	<div id="site_creator_main">
+		<nav class="site_creator_nav">
+			<a href="#" id="templates_link"><div class="creator_nav">Templates</div></a>
+			<a href="#" id="creator_link"><div class="creator_nav">Features</div></a>
+			<a href="#" id="summary_link"><div class="creator_nav">Summary</div></a>
+		</nav>
+		<section id="templates">
+			TEMPLATES
+			<!-- Insert The Templates, Open a Lightbox of the Image -->
+		</section>
+
+		<section id="creator">
+			<div id="tools">
+				<div id="tool_info">
+					&nbsp;
+					<!-- On Hover over a Tool, Present Information about that tool. -->
+				</div>
+				<div id="toolbox">
+					<!-- Inserts all tools via erb -->
+					<% @active_features.each do |f| %>
+						<div class="tool" id="<%= f.css_id %>_tool">
+							<div id="<%= f.css_id %>">
+								<img src="/assets/icons/content_page.png" />
+								<span><%= f.title %></span>
 							</div>
-						<% end %>
-					</div>
-				</div>
-				<div class="list">
-					<div class="feature_list">
-						
-					</div>
-					<div class="trash">
-						Drop here to delete item.
-					</div>
+						</div>
+					<% end %>
 				</div>
 			</div>
-			<div class="summary" id="summary">
-				<!-- Form including title, slug (defaults), 
-					desktop_site_url, logo upload, 
-					HIDDEN: customer_id, template added 
-					dynamically as the jQuery objects are 
-					manipulated -->
-				<div>Custom URL</div>
-				<div>Save Site</div>
+			<div id="feature_list">
+				<div id="sortable">
+				</div>
 			</div>
-		</div>
+		</section>
+
+		<section id="summary">
+			SUMMARY
+		</section>
 	</div>
-	<div class="mobile_preview">
-		Mobile Preview
+	<div id="mobile_preview">
 	</div>
 </section>
+<section class="site_creator_modal">
+	<div class=".alert"></div>
+	<%= render :partial => 'shared/site_creator_forms' %>
+</section>
+
 
 <script>
-$( document ).ready(function() {
+$(document).ready(function() {
 
-	// If page loads without a tab clicked, #templates is set as the path
 	var currentPath = window.location.pathname;
-
-	// Set default tab when page loads
-	var currentTab = "#templates";
-
-	// Initial Limitations
+	var currentTab = "#templates"
 	var limitations = {
-		contact: 1,
-		content_page: 10000,
-		external_link: 10000,
-		image_gallery: 1,
-		introduction: 1,
-		rss_feed: 10000,
-		social_link: 1
+		contact_feature: 1,
+		content_page_feature: 10000,
+		external_links_feature: 10000,
+		image_gallery_feature: 1,
+		introduction_feature: 1,
+		rss_feed_feature: 10000,
+		social_links_feature: 1
 	};
 
 	// Add 'basic_limited' limitations if that is the customer type or if it
 	// is a preview session.
 	if(currentPath.match(/\/site_creator_preview\/.+/) != null || "<%=j current_customer.customer_type %>" == "basic_limited") {
-		limitations.content_page = 3;
-		limitations.external_link = 3;
+		limitations.content_page_feature = 3;
+		limitations.external_links_feature = 3;
 	}
 
-	// Handle The Hide/Show of Tabs
-	$("#templates_link, #features_link, #summary_link").click(function(e) {
+	// Handle the Tabs 
+	$("#templates_link, #creator_link, #summary_link").click(function(e) {
 		e.preventDefault();
 
 		var pathId = "#" + this.id.replace("_link", "");
@@ -89,103 +82,143 @@ $( document ).ready(function() {
 		}
 	});
 
-	// Establish jQuery draggables for each item under '.toolbox-tools'
+	// Set up the Draggable Elements in the Toolbox
 	<% @feature_ids.each do |id| %>
-		$("#<%=j id %>").draggable({
+		$("#<%= id %>" + "_tool").draggable({
 			revert: "invalid",
-			connectToSortable: ".feature_list",
+			connectToSortable: "#sortable",
 			helper: "clone"
 		});
+
 	<% end %>
-	
-	// Establish the Sortable Div
-	var id = '';		// Variable Scoping... this variable is needed throughout the sortable callbacks
+
+	// Set up the Sortable List && Limitation Functionality
 	var currentList = [];
+	var map = {};
+	var objectList = [];
 
-	$(".feature_list").sortable({
-		connectWith: ".trash",
-		revert: true,
-		receive: function(event, ui) {
-			id = ui.item[0].id;
-		},
-		update: function(event, ui) {
-			var newClasses = ui.item[0].className.replace("tool_feature", "feature_list_item");
-			ui.item[0].className = newClasses;
-			ui.item[0].id = id;
-
-			currentList = $(".feature_list").sortable("toArray");
-			map = new Object();
-			for(var i = 0; i < currentList.length; i++) {
-				if(map[currentList[i]] != null) {
-					map[currentList[i]] += 1;
+	// Function to Handle the update and removal of each unique
+	// object created with the program.
+	// 
+	// If feature is an Object, update or add it to the list
+	// if it is a string (an id, remove it from the list)
+	function manageObjects(feature) {
+		console.log(feature);
+		if(typeof feature == "object") {
+			for(var i in objectList) {
+				if(feature.form_id == objectList[i].form_id) {
+					objectList[i] = feature;
 				} else {
-					map[currentList[i]] = 1;
+					objectList.push(feature);
 				}
 			}
-			for(var key in map) {
-				var currentId = "#" + key;
-				if(map[key] == limitations[key]) {
-					$(".tool_list " + currentId).draggable("disable");
-					$(".tool_list " + currentId).css("background", "black");
-				}
-				if(map[key] < limitations[key]) {
-					$(".tool_list " + currentId).draggable("enable");
-					$(".tool_list " + currentId).css("background", "pink");
+		} else {
+			for(var i in objectList) {
+				if(feature == objectList[i].form_id) {
+					objectList.splice(i, 1);
 				}
 			}
 		}
-	});
+	}
 
-	// Delete Items From List
-	$(".trash").sortable({
-		receive: function(event, ui) {
-			if(confirm("Are You Sure?")) {
-				ui.item.remove();
-			} else {
-				ui.item.cancel();
+	// Function to Handle the Changing of CSS Depending on 
+	// whether or not limitations have been met.
+	function manageLimits(deleted) {
+		deleted = deleted || false;
+		if(deleted){
+			deleted = deleted.replace(/_[0-9]+/, "");
+		}
+
+		currentList = $("#sortable").sortable("toArray");
+		// Manage Limitations
+		map = {};
+
+		// Gather the current count for each feature
+		for(var i = 0; i < currentList.length; i++) {
+			if(map[currentList[i].replace(/_[0-9]+/, "")] != null) {
+				map[currentList[i].replace(/_[0-9]+/, "")] += 1;
+			}else{
+				map[currentList[i].replace(/_[0-9]+/, "")] = 1;
 			}
+		}
+
+		// Change CSS Accordingly
+		for(var key in map) {
+			if(map[key] == limitations[key]) {
+				$("#" + key + "_tool").css("background", "#464646");
+				$("#" + key + "_tool").draggable("disable");
+			}
+		}
+
+		// Reset CSS If a Limit is no longer Met
+		map[deleted] = map[deleted] || 0;
+		if(deleted && map[deleted] < limitations[deleted]) {
+			$("#" + deleted + "_tool").css("background", "pink");
+			$("#" + deleted + "_tool").draggable("enable");
+		}
+	}
+
+	// Create Sortable List
+	var uniqCount = 1;
+
+	$("#sortable").sortable({
+		revert: true,
+		update: function(event, ui) {
+			var deleteHtml = $("<span>(X)</span>").click(function(e) {
+				if(confirm("Are You Sure?")) {
+					var id = this.parentElement.parentElement.id;
+					this.parentElement.parentElement.remove();
+
+					// Update the Map & Current Links Accordingly
+					manageLimits(id);
+				}
+			});
+			var editHtml = $("<span>(Edit)</span>").click(function(e) {
+				var uniqId = this.parentElement.parentElement.id;
+				var formDivId = "#" + uniqId.replace(/feature_[0-9]+/, "modal");
+
+				var maskHeight = $(document).height();
+				var maskWidth = $(window).width();
+
+				$('.mask').css({"width":maskWidth, "height":maskHeight});
+
+				$('.mask').fadeIn(500);
+				$('.mask').fadeTo("slow", 0.8);
+
+				var winH = $(window).height();
+				var winW = $(window).width();
+
+				$(".site_creator_modal").css('top', winH/2-$(".site_creator_modal").height()/2);
+				$(".site_creator_modal").css('left', winW/2-$(".site_creator_modal").width()/2);
+
+				$(".site_creator_modal").fadeIn(800);
+
+				$(formDivId + " form").attr("class", uniqId);
+				$(formDivId + " form").append("<input value=" + "'" + uniqId + "'" + "name='form_id' type='hidden' />");
+
+				$(formDivId).show();
+
+				$("." + uniqId).bind("ajax:success", function(e, data, status, xhr) {
+					manageObjects(data);
+
+					$(".mask").hide();
+					$(formDivId).hide();
+					$(".site_creator_modal").hide();
+				});
+			});
+
+			var childId = ui.item[0].firstElementChild.id;
+			
+			$(ui.item[0].firstElementChild).append(editHtml);
+			$(ui.item[0].firstElementChild).append(deleteHtml);
+			$(ui.item[0]).attr("id", ui.item[0].firstElementChild.id + "_" + uniqCount.toString());
+			$(ui.item[0].firstElementChild).removeAttr("id");
+			uniqCount += 1;
+
+			manageLimits();
 		}
 	});
 
-	// Sortable List Helper Functions
-	//
-	// Verify against limitations that currentList 
-
-	// Establish an ordering window for them to be dragged into
-	// -> Keep the order of each object by managing its position in an object $features
-	//    This $features object will be perfect for sending to the server because the
-	//	  controller is setup to parse what is essentially JSON as Ruby Hashes
-
-
-	// Handle Modal Options Windows for each Feature (ie: partials to be rendered as 
-	// necessary for the settings. 
-
-
-	// Handle Saving a New Site, Updating an Old Site
-	// !!!!!!!!!! Handle CRUD for Preview Sites !!!!!!!!!!!!!!
-
-
-	// Handle Updating the look and feel of the Mobile Preview Site
-
-
-	// Handle premature exiting-- prompt to save or lose changes
-
-
-	// --------------- Calls to Controllers ---------------//
-	// @preview = true  --> indicating unsubscribed user
-	// site_creator#create post: @site, @features
-	// @site has preview_url --> indicating temporary nature
-	// ^^ Summary Tab Custom: Includes preview url, call to action
-	//    to sign up for 30 Day Free Trial.
-	//	  !!! Setup mailer to send out information about prevew
-	//		  and more sales material
-	// 
-	// @preview = false --> indicating a subscribed user
-	// current_url == /site_creator/new
-	// site_creator#create post: @site, @features
-	// 
-	// @preview = false --> indicating a subscribed user
-	// current_url == /site_creator/edit/:id
-	// site_Creator#update post: site_id, @site, @features
+	// Handle the Links and Modals that are Rendered Accordingly
 });
 </script>

@@ -6,18 +6,15 @@ var limitations (object including limits per feature, noted by "css_id")
 // Handle Tabs
 
 // Setup "tool_list" with draggables for each Feature
+	> clone helper
 
 // Setup "feature_list" as a sortable
 .ConnectWith 'trash'
 	> get id from item being dragged (ie. Feature.css_id)
-	> update the className of the new object from (tool* to feature*)
-	> update the id for the new object
+	> update the className of the new object from (tool* to feature*)		// ACTUALLY Just call to it like $('.parent_class .tool_*')
+	> update the id for the new object										// OBJECT NEEDS the id for purposes of serializing and such
 	> update the HTML structure of the object to fit better into sortable
+		>> This includes "Edit" and "Remove" Links
 
-// Setup 'trash' as a sortable
-	> Alert the Customer that deletion is permanent
-	> destroy any sortable item recieved
-
-
-		
-
+// Object Creation | Maintaining Feature Data
+	> var features = {}				// Store each feature here as an object

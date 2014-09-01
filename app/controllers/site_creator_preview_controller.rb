@@ -6,8 +6,25 @@ class SiteCreatorPreviewController < ApplicationController
 		@site = Site.new(site_type: "preview")
 		@active_features = Feature.all.where(is_active: true)
 		@feature_ids = []
-		@active_features.each do |f|
-			@feature_ids.push(f.css_id)
+
+		# Each Active Feature.new needs an instance variable
+		# and @feature_ids needs to be pushed to get CSS ids
+		# setup easily in JS
+		@active_features.each do |feature|
+			@feature_ids.push(feature.css_id)
+			constant = feature.title.split(" ").push("Feature")
+			constant.each_index do |c| 
+				constant[c] = constant[c].capitalize
+			end
+			constant = constant.join("").constantize
+				
+			new_title = feature.title.downcase.split(" ").join("_") + "_feature"
+			
+			puts constant
+			puts new_title
+			# Formatted Like "@content_page_feature"
+			instance_variable_set("@#{new_title}", constant.new)
+			puts @content_page_feature
 		end
 	end
 
@@ -22,6 +39,16 @@ class SiteCreatorPreviewController < ApplicationController
 		else
 			return render :json => {success: false}
 		end
+	end
+
+	def ajax_handler
+		@params = {}
+		@return = {}
+		params.each_pair do |k, v|
+			@params.store(k, v) if k != "form_id" && k != "action" && k != "commit" && k != "controller"
+		end
+		@return.store(params[:form_id], @params)
+		render :json => @return
 	end
 
 	private

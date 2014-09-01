@@ -1,0 +1,12 @@
+<div id="introduction_modal">
+	<%= form_for :introduction_feature,
+		as: data,
+		html: {id: "introduction_feature_modal"}, 
+		remote: true,
+		url: site_creator_preview_parser_path(introduction) do |f| %>
+		<%= f.label :title %>
+		<%= f.text_field :title %>
+		<%= f.label :content %>
+		<%= f.cktext_area :content, cols: 120, rows: 40 %>
+	<% end %>
+</div>

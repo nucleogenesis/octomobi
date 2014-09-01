@@ -16,6 +16,8 @@ gem 'jquery-rails'
 
 gem 'jquery-ui-rails'
 
+gem 'ckeditor'
+
 gem 'turbolinks'
 
 # Fastspring Payment Processor Gem & Dependencies

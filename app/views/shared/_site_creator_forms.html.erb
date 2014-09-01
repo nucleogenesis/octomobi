@@ -1,0 +1,38 @@
+<div id = "content_page_modal">
+	CONTENT
+	<%= form_for :content_page_feature,
+		remote: true,
+		url: site_creator_preview_parser_path do |f| %>
+		<%= f.label :title %>
+		<%= f.text_field :title %>
+		<%= f.label :content %>
+		<%= f.cktext_area :content, cols: 120, rows: 40 %>
+		<%= f.submit 'Finish Editing' %>
+	<% end %>
+</div>
+<div id = "social_links_modal">
+	SOCIAL
+	<%= form_for :social_links_feature,
+		remote: true,
+		url: site_creator_preview_parser_path do |f| %>
+		<%= f.label :facebook %>
+		<%= f.text_field :facebook_url %>
+		<%= f.label :twitter %>
+		<%= f.text_field :twitter_url, cols: 120, rows: 40 %>
+		<%= f.submit 'Finish Editing' %>
+	<% end %>
+</div>
+<div id = "introduction_modal">
+	INTRO
+	<%= form_for :introduction_feature,
+		remote: true,
+		url: site_creator_preview_parser_path do |f| %>
+		<%= f.label :title %>
+		<%= f.text_field :title %>
+		<%= f.label :content %>
+		<%= f.cktext_area :content, cols: 120, rows: 40 %>
+		<%= f.submit 'Finish Editing' %>
+	<% end %>
+</div>
+
+

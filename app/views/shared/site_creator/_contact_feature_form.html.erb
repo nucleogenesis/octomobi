@@ -1,0 +1,23 @@
+<%= form_for :contact_feature, 
+	url: site_creator_preview_parser_path,
+	remote: true,
+	method: :get,
+	html: {class: uniqClass} do |f| %>
+	<%= f.label :email %>
+	<%= f.email_field :email %>
+	<%= f.label :phone_number %>
+	<%= f.text_field :phone_number %>
+	<%= f.label :fax_number %>
+	<%= f.text_field :fax_number %>
+	<%= f.label :address %>
+	<%= f.text_field :address %>
+	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.submit "Finished Editiing" %>
+<% end %>
+<script>
+	$("." + "<%=j uniqClass %>").bind("ajax:success", function(e, data, status, xhr) {
+		$(".mask").hide();
+		$(".site_creator_modal").hide();
+		$('.' + "<%=j uniqClass %>").hide();
+	});
+</script>

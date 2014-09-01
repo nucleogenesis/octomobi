@@ -41,6 +41,17 @@ class SiteCreatorPreviewController < ApplicationController
 		end
 	end
 
+	def form
+		puts params
+		@class = params[:uniqClass].gsub(/_[0-9]+/, "")
+		if @class
+			return render partial: "shared/site_creator/#{@class}_form", locals: {uniqClass: params[:uniqClass]}
+		else
+			render nothing: true
+			raise("No Unique Class Received")
+		end
+	end
+
 	def ajax_handler
 		@params = {}
 		@return = {}

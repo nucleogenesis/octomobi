@@ -1,0 +1,19 @@
+<%= form_for :content_page_feature, 
+	url: site_creator_preview_parser_path,
+	remote: true,
+	method: :get,
+	html: {class: uniqClass} do |f| %>
+	<%= f.label :title %>
+	<%= f.text_field :title %>
+	<%= f.label :content %>
+	<%= f.cktext_area :content %>
+	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.submit "Finished Editiing" %>
+<% end %>
+<script>
+	$("." + "<%=j uniqClass %>").bind("ajax:success", function(e, data, status, xhr) {
+		$(".mask").hide();
+		$(".site_creator_modal").hide();
+		$('.' + "<%=j uniqClass %>").hide();
+	});
+</script>

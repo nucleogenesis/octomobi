@@ -23,7 +23,10 @@
 						<div class="tool" id="<%= f.css_id %>_tool">
 							<div id="<%= f.css_id %>">
 								<img src="/assets/icons/content_page.png" />
-								<span><%= f.title %></span>
+								<span class="tool_title"><%= f.title %></span>
+								<div class="tool_options">
+									<span class="delete">(X)</span> | <span class="edit">(Edit)</span>
+								</div>
 							</div>
 						</div>
 					<% end %>
@@ -44,7 +47,7 @@
 </section>
 <section class="site_creator_modal">
 	<div class=".alert"></div>
-	<%= render :partial => 'shared/site_creator_forms' %>
+	<!-- Insert Form Here via jQuery -->
 </section>
 
 
@@ -52,7 +55,7 @@
 $(document).ready(function() {
 
 	var currentPath = window.location.pathname;
-	var currentTab = "#templates"
+	var currentTab = "#templates";
 	var limitations = {
 		contact_feature: 1,
 		content_page_feature: 10000,
@@ -95,36 +98,13 @@ $(document).ready(function() {
 	// Set up the Sortable List && Limitation Functionality
 	var currentList = [];
 	var map = {};
-	var objectList = [];
-
-	// Function to Handle the update and removal of each unique
-	// object created with the program.
-	// 
-	// If feature is an Object, update or add it to the list
-	// if it is a string (an id, remove it from the list)
-	function manageObjects(feature) {
-		console.log(feature);
-		if(typeof feature == "object") {
-			for(var i in objectList) {
-				if(feature.form_id == objectList[i].form_id) {
-					objectList[i] = feature;
-				} else {
-					objectList.push(feature);
-				}
-			}
-		} else {
-			for(var i in objectList) {
-				if(feature == objectList[i].form_id) {
-					objectList.splice(i, 1);
-				}
-			}
-		}
-	}
 
 	// Function to Handle the Changing of CSS Depending on 
 	// whether or not limitations have been met.
 	function manageLimits(deleted) {
 		deleted = deleted || false;
+
+		// Limits checked without regard to uniqId, only "*_feature"
 		if(deleted){
 			deleted = deleted.replace(/_[0-9]+/, "");
 		}
@@ -159,66 +139,94 @@ $(document).ready(function() {
 	}
 
 	// Create Sortable List
-	var uniqCount = 1;
-
+	var uniqIdCounter = 1;
+		// Function to find if an id is new to the sortable
+	function isNew(id) {
+		var currentList = $("#sortable").sortable("toArray");
+		for(var i in currentList) {
+			if(currentList[i] == id) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+		
 	$("#sortable").sortable({
 		revert: true,
 		update: function(event, ui) {
-			var deleteHtml = $("<span>(X)</span>").click(function(e) {
-				if(confirm("Are You Sure?")) {
-					var id = this.parentElement.parentElement.id;
-					this.parentElement.parentElement.remove();
-
-					// Update the Map & Current Links Accordingly
-					manageLimits(id);
-				}
-			});
-			var editHtml = $("<span>(Edit)</span>").click(function(e) {
-				var uniqId = this.parentElement.parentElement.id;
-				var formDivId = "#" + uniqId.replace(/feature_[0-9]+/, "modal");
-
-				var maskHeight = $(document).height();
-				var maskWidth = $(window).width();
-
-				$('.mask').css({"width":maskWidth, "height":maskHeight});
-
-				$('.mask').fadeIn(500);
-				$('.mask').fadeTo("slow", 0.8);
-
-				var winH = $(window).height();
-				var winW = $(window).width();
-
-				$(".site_creator_modal").css('top', winH/2-$(".site_creator_modal").height()/2);
-				$(".site_creator_modal").css('left', winW/2-$(".site_creator_modal").width()/2);
-
-				$(".site_creator_modal").fadeIn(800);
-
-				$(formDivId + " form").attr("class", uniqId);
-				$(formDivId + " form").append("<input value=" + "'" + uniqId + "'" + "name='form_id' type='hidden' />");
-
-				$(formDivId).show();
-
-				$("." + uniqId).bind("ajax:success", function(e, data, status, xhr) {
-					manageObjects(data);
-
-					$(".mask").hide();
-					$(formDivId).hide();
-					$(".site_creator_modal").hide();
-				});
-			});
-
-			var childId = ui.item[0].firstElementChild.id;
+			var featureId = ui.item[0].firstElementChild.id;
+			var uniqId = featureId + "_" + uniqIdCounter;
 			
-			$(ui.item[0].firstElementChild).append(editHtml);
-			$(ui.item[0].firstElementChild).append(deleteHtml);
-			$(ui.item[0]).attr("id", ui.item[0].firstElementChild.id + "_" + uniqCount.toString());
-			$(ui.item[0].firstElementChild).removeAttr("id");
-			uniqCount += 1;
+			if(isNew(uniqId)) {
+				$(ui.item[0]).attr("id", uniqId);
+				$(ui.item[0].firstElementChild).removeAttr("id");
+				$("#" + uniqId + " .tool_options").show();
+				addOptions(uniqId);
+				uniqIdCounter += 1;
+				manageLimits();
+			}
 
-			manageLimits();
+			console.log(currentList);
 		}
 	});
 
-	// Handle the Links and Modals that are Rendered Accordingly
+	// Functionality upon clicking the Delete & Edit Buttons in a Sortable Item
+	function addOptions(id) {
+
+		// Add delete functionality to sortable object
+		$("#" + id + " .delete").click(function(e) {
+			if(confirm("Are You Sure?")) {
+				$('.' + id).remove();
+				$("#" + id).remove();
+
+				// Update the Map & Current Links Accordingly
+				manageLimits(id);
+			}
+		});
+
+		// Add edit functionality. Create, update, handle forms
+		$("#" + id + " .edit").click(function(e) {
+			var formClass = "." + id;
+
+			var maskHeight = $(document).height();
+			var maskWidth = $(window).width();
+
+			$('.mask').css({"width":maskWidth, "height":maskHeight});
+
+			$('.mask').fadeIn(500);
+			$('.mask').fadeTo("slow", 0.8);
+
+			var winH = $(window).height();
+			var winW = $(window).width();
+
+			$(".site_creator_modal").css('top', winH/2-$(".site_creator_modal").height()/2);
+			$(".site_creator_modal").css('left', winW/2-$(".site_creator_modal").width()/2);
+
+			$(".site_creator_modal").fadeIn(800);
+
+			if(!$(formClass).length) {
+				renderForm(id);
+			} else {
+				$(formClass).show();
+			}
+		});
+	}
+
+	// Function to Render Uniq Forms w/ Uniq Classes
+	function renderForm(uniqClass) {
+		$.ajax({
+			url: '/site_creator_preview/form',
+			data: {uniqClass: uniqClass}
+		})
+		.done(function(html) {
+			$(".site_creator_modal").append(html);
+		})
+		.fail(function(data) {
+			console.log(data);
+			alert("AJAX FAILED");
+		});
+	}
+
 });
 </script>

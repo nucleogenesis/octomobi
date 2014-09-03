@@ -1,5 +1,6 @@
 class SiteCreatorPreviewController < ApplicationController
 	before_action :authenticate_customer!
+	layout "customers"
 
 	def new
 		@customer = current_customer
@@ -20,11 +21,8 @@ class SiteCreatorPreviewController < ApplicationController
 				
 			new_title = feature.title.downcase.split(" ").join("_") + "_feature"
 			
-			puts constant
-			puts new_title
 			# Formatted Like "@content_page_feature"
 			instance_variable_set("@#{new_title}", constant.new)
-			puts @content_page_feature
 		end
 	end
 
@@ -42,12 +40,11 @@ class SiteCreatorPreviewController < ApplicationController
 	end
 
 	def form
-		puts params
 		@class = params[:uniqClass].gsub(/_[0-9]+/, "")
 		if @class
 			return render partial: "shared/site_creator/#{@class}_form", locals: {uniqClass: params[:uniqClass]}
 		else
-			render nothing: true
+			return render nothing: true
 			raise("No Unique Class Received")
 		end
 	end
@@ -76,7 +73,7 @@ class SiteCreatorPreviewController < ApplicationController
 
 		save_feature = Proc.new do |key, value| 
 			feature = key.new(value)
-			unless feature.save then raise("Feature #{key} Invalid") end
+			unless feature.save then raise("Feature #{key} Invalid... #{feature.errors.full_messages}") end
 		end
 
 		features.each_pair do |k, v|

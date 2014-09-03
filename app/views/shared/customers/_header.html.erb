@@ -1,0 +1,29 @@
+<!-- shared/customers/header | rendered in layouts/customers -->
+<header class="customer_header">
+	<nav class="customer_nav">
+		<%= link_to customer_dashboard_path do %>
+			<%= image_tag "logo.png", alt: "Octomobi Logo" %>
+		<% end %>
+		<ul>
+			<li><%= link_to "Dashboard",	customer_dashboard_path %></li>
+			<li>
+				<%= link_to "Sites",		customer_sites_path %>
+				<ul>
+					<li><%= link_to "Create New Site", @creator_path %></li>
+					<% current_customer.sites.each do |site| %>
+						<li><%= link_to site.title, "#" %></li>
+					<% end %>
+				</ul>
+			</li>
+			<li><%= link_to "Account",		customer_account_path %></li>
+			<li class="nav_last"><%= link_to "Help", "#" %></li>
+		</ul>
+		<%= render :partial => "shared/account" %>
+	</nav>
+
+	<div class="header_content">
+
+		<%= render :partial => 'shared/errors' %>
+
+	</div>
+</header>

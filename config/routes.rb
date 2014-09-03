@@ -26,8 +26,24 @@ OctomobiRails::Application.routes.draw do
 	# Customer Sessions & Registrations For Custom Controllers
 	devise_for :customers, path: "user", controllers:  {registrations: 'registrations', 
 													 sessions: 'sessions'}
+
+	# Customers Dashboard Routes
+	match '/user/dashboard', to: 'customers#dashboard', via: :get, as: 'customer_dashboard'
+	match '/user/sites', to: 'customers#sites', via: :get, as: 'customer_sites'
+	match '/user/account', to: 'customers#account', via: :get, as: 'customer_account'
+
+	# Customer Subscriptions
+	match '/user/subscription/new', to: 'subscriptions#create_pending', via: :post,
+		as: 'new_subscription'
+	match '/user/subscription/activate/:customer_id', to: 'subscriptions#activate',
+		via: :post, as: 'activate_subscription'
+	match '/user/subscription/deactivate/:customer_id', to: 'subscriptions#deactivate',
+		via: :post, as: 'deactivate_subscription'
+
+
 	#Site Creator (Preview / Production)
 	resources :site_creator, only: [:new, :create, :edit, :update, :destroy]
+
 	resources :site_creator_preview, only: [:new, :create]
 	match 'site_creator_preview/parse', to: 'site_creator_preview#ajax_handler', 
 		via: :get, as: 'site_creator_preview_parser'
@@ -41,9 +57,5 @@ OctomobiRails::Application.routes.draw do
 		as: 'reseller_pricing'
 
 	resources :subscriptions
-
-	match '/user/dashboard',	to: 'customers#dashboard', via: :get, as: 'customer_dashboard'
-
-
 
 end

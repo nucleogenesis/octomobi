@@ -34,12 +34,24 @@
 			</div>
 			<div id="feature_list">
 				<div id="sortable">
+					<% if @features && params[:action] == "edit" %>
+						hi!
+					<% end %>
 				</div>
 			</div>
 		</section>
 
 		<section id="summary">
-			SUMMARY
+			<div id="site_options">
+				<ul>
+					<li>Site Title</li>
+					<li>Site Slug</li>
+					<li>Something Else</li>
+				</ul>
+			</div>
+			<div id="site_submit">
+				<span>Publish My Preview Site</span>
+			</div>
 		</section>
 	</div>
 	<div id="mobile_preview">
@@ -54,6 +66,17 @@
 <script>
 $(document).ready(function() {
 
+	//----------------------------------------------//
+	// Octomobie Site Creator						//
+	// Dependencies: ckeditor, jquery, jquery-ui	//
+	//												//
+	// Written by Jacob Pierce						//
+	//----------------------------------------------//
+
+	//---------------------------------------//
+	//-------- Variable Declaration ---------//
+	//---------------------------------------//
+
 	var currentPath = window.location.pathname;
 	var currentTab = "#templates";
 	var limitations = {
@@ -65,6 +88,15 @@ $(document).ready(function() {
 		rss_feed_feature: 10000,
 		social_links_feature: 1
 	};
+	var uniqIdCounter = 1;				// Used to assign each feature a unique ID
+	var currentList = [];				// Placeholder used to keep current order of sortable items
+	var map = {};						// Counts how many of each unique feature has been added
+	window.features = {};				// Gathers data from Edit Modals (NOTE: Global Variable)
+
+
+	//---------------------------------------//
+	//----------- General Settings ----------//
+	//---------------------------------------//
 
 	// Add 'basic_limited' limitations if that is the customer type or if it
 	// is a preview session.
@@ -85,6 +117,22 @@ $(document).ready(function() {
 		}
 	});
 
+	//---------------------------------------//
+	//----------- Templates Tab -------------//
+	//---------------------------------------//
+
+	//---------------------------------------//
+	//--------- Site Creator Tab ------------//
+	//---------------------------------------//
+
+
+	// Pre-Add Relevant Data for Edit Action
+	<% if @features %>
+		<% @features.each do |f| %>
+			
+		<% end %>
+	<% end %>
+
 	// Set up the Draggable Elements in the Toolbox
 	<% @feature_ids.each do |id| %>
 		$("#<%= id %>" + "_tool").draggable({
@@ -92,84 +140,120 @@ $(document).ready(function() {
 			connectToSortable: "#sortable",
 			helper: "clone"
 		});
-
 	<% end %>
 
-	// Set up the Sortable List && Limitation Functionality
-	var currentList = [];
-	var map = {};
-
-	// Function to Handle the Changing of CSS Depending on 
-	// whether or not limitations have been met.
-	function manageLimits(deleted) {
-		deleted = deleted || false;
-
-		// Limits checked without regard to uniqId, only "*_feature"
-		if(deleted){
-			deleted = deleted.replace(/_[0-9]+/, "");
-		}
-
-		currentList = $("#sortable").sortable("toArray");
-		// Manage Limitations
-		map = {};
-
-		// Gather the current count for each feature
-		for(var i = 0; i < currentList.length; i++) {
-			if(map[currentList[i].replace(/_[0-9]+/, "")] != null) {
-				map[currentList[i].replace(/_[0-9]+/, "")] += 1;
-			}else{
-				map[currentList[i].replace(/_[0-9]+/, "")] = 1;
-			}
-		}
-
-		// Change CSS Accordingly
-		for(var key in map) {
-			if(map[key] == limitations[key]) {
-				$("#" + key + "_tool").css("background", "#464646");
-				$("#" + key + "_tool").draggable("disable");
-			}
-		}
-
-		// Reset CSS If a Limit is no longer Met
-		map[deleted] = map[deleted] || 0;
-		if(deleted && map[deleted] < limitations[deleted]) {
-			$("#" + deleted + "_tool").css("background", "pink");
-			$("#" + deleted + "_tool").draggable("enable");
-		}
-	}
 
 	// Create Sortable List
-	var uniqIdCounter = 1;
-		// Function to find if an id is new to the sortable
-	function isNew(id) {
-		var currentList = $("#sortable").sortable("toArray");
-		for(var i in currentList) {
-			if(currentList[i] == id) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-		
 	$("#sortable").sortable({
 		revert: true,
 		update: function(event, ui) {
-			var featureId = ui.item[0].firstElementChild.id;
-			var uniqId = featureId + "_" + uniqIdCounter;
-			
-			if(isNew(uniqId)) {
-				$(ui.item[0]).attr("id", uniqId);
-				$(ui.item[0].firstElementChild).removeAttr("id");
-				$("#" + uniqId + " .tool_options").show();
-				addOptions(uniqId);
-				uniqIdCounter += 1;
-				manageLimits();
+			if(event.handleObj.namespace == 'draggable') {
+				var featureId = ui.item[0].firstElementChild.id;
+				var uniqId = featureId + "_" + uniqIdCounter;
+				
+				if(isNew(uniqId)) {
+					$(ui.item[0]).attr("id", uniqId);
+					$(ui.item[0].firstElementChild).removeAttr("id");
+					$("#" + uniqId + " .tool_options").show();
+					addOptions(uniqId);
+					uniqIdCounter += 1;
+					manageLimits();
+				}
 			}
-
-			console.log(currentList);
 		}
 	});
+
+	//---------------------------------------//
+	//------------- Summary Tab -------------//
+	//---------------------------------------//
+
+	$('#site_submit').click(function(e) {   
+
+		// 0. Alert if a data section is empty or if there are no features.
+		for(var key in features) {
+			if(!features[key]) {
+				alert("Feature '" + key.replace(/_[0-9]+/, "").split("_").join(" ") + "' is empty. Please add information to or remove the feature.");
+				$(currentTab).hide();
+				$("#creator").show();
+				return;
+			}
+		}
+
+		if($.isEmptyObject(features)) {
+			alert("You need to add some features to your website!");
+			$(currentTab).hide();
+			$("#creator").show();
+			return;
+		}
+
+		// 1. Add an Order key to each Object based on the array from the sortable
+		var featureList = $("#sortable").sortable("toArray");
+		for(var i in featureList){
+			features[featureList[i]].order = i;
+		}
+		console.log(featureList);
+
+		// 2. Create the sweet object that 'site_creator_preview#create' can use
+		var finalObj = {};
+
+		for(var key in features) {
+			var newKey = key.replace(/_[0-9]+/, "");
+			delete features[key].form_id;
+
+			if(finalObj[newKey]) {
+				if(finalObj[newKey].constructor != Array) {
+					finalObj[newKey] = new Array(finalObj[newKey], features[key]);
+				} else {
+					finalObj[newKey].push(features[key]);
+				}
+			} else {
+				finalObj[newKey] = features[key];
+			}
+		}
+
+		delete finalObj[0];
+
+		// 3. AJAX That Object off to the Rails Controller
+		var site = {title: "MySite", desktop_site_url: "", google_analytics_api_key: "",
+			logo_url: "", site_type: "preview", customer_id: "<%= current_customer.id %>",
+			slug: "pre-V-w-my-site", template: "1"};
+
+		$.ajax({
+			url: '/site_creator_preview',
+			data: {site: site, features: finalObj},
+			method: "post"
+		})
+		.done(function(html) {
+			alert("AJAX... seemed to succeed");
+		})
+		.fail(function(data) {
+			alert("AJAX FAILED");
+		});
+
+		// 4.	IF PREVIEW: Render a link to the site for them to use on their mobile to view the site
+		//					then render a call to action on the page asking the user to buy.
+		//		IF NEW:		Return to Dashboard	
+		//		
+		//		IF UPDATE:	Return to Dashboard
+	});
+
+	//---------------------------------------//
+	//-------- Function Declaration ---------//
+	//---------------------------------------//
+
+	// Function to Render Uniq Forms w/ Uniq Classes
+	function renderForm(uniqClass) {
+		$.ajax({
+			url: '/site_creator_preview/form',
+			data: {uniqClass: uniqClass}
+		})
+		.done(function(html) {
+			$(".site_creator_modal").append(html);
+		})
+		.fail(function(data) {
+			alert("AJAX FAILED");
+		});
+	}
 
 	// Functionality upon clicking the Delete & Edit Buttons in a Sortable Item
 	function addOptions(id) {
@@ -213,20 +297,59 @@ $(document).ready(function() {
 		});
 	}
 
-	// Function to Render Uniq Forms w/ Uniq Classes
-	function renderForm(uniqClass) {
-		$.ajax({
-			url: '/site_creator_preview/form',
-			data: {uniqClass: uniqClass}
-		})
-		.done(function(html) {
-			$(".site_creator_modal").append(html);
-		})
-		.fail(function(data) {
-			console.log(data);
-			alert("AJAX FAILED");
-		});
+	// Function to find if an id is new to the sortable
+	function isNew(id) {
+		var currentList = $("#sortable").sortable("toArray");
+		for(var i in currentList) {
+			if(currentList[i] == id) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 
+	// Function to Handle the Changing of CSS Depending on 
+	// whether or not limitations have been met.
+	function manageLimits(deleted) {
+		deleted = deleted || false;
+
+		// Limits checked without regard to uniqId, only "*_feature"
+		if(deleted){
+			remove = deleted;
+			deleted = deleted.replace(/_[0-9]+/, "");
+		}
+
+		currentList = $("#sortable").sortable("toArray");
+		// Manage Limitations
+		map = {};
+
+		// Gather the current count for each feature
+		for(var i = 0; i < currentList.length; i++) {
+			if(map[currentList[i].replace(/_[0-9]+/, "")] != null) {
+				map[currentList[i].replace(/_[0-9]+/, "")] += 1;
+			}else{
+				map[currentList[i].replace(/_[0-9]+/, "")] = 1;
+			}
+		}
+
+		// Change CSS Accordingly
+		for(var key in map) {
+			if(map[key] == limitations[key]) {
+				$("#" + key + "_tool").css("background", "#464646");
+				$("#" + key + "_tool").draggable("disable");
+			}
+		}
+
+		// Reset CSS If a Limit is no longer Met
+		map[deleted] = map[deleted] || 0;
+		if(deleted && map[deleted] < limitations[deleted]) {
+			// Remove from Features
+			delete features[remove];
+
+			$("#" + deleted + "_tool").css("background", "pink");
+			$("#" + deleted + "_tool").draggable("enable");
+		}
+	}
 });
 </script>

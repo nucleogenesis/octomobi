@@ -30,6 +30,7 @@
 				<%= f.label :password_confirmation %>:
 				<%= f.password_field :password_confirmation %>
 			</div>
+			<%= f.hidden_field :customer_type, value: "preview" %>
 			<div id="register_button" class="form_button"><%= f.submit "Sign up" %></div>
 		<% end %>
 		<%= form_for(:resource, 

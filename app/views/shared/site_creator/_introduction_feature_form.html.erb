@@ -6,7 +6,7 @@
 	<%= f.label :title %>
 	<%= f.text_field :title %>
 	<%= f.label :content %>
-	<%= f.cktext_area :content %>
+	<%= f.cktext_area :content, id: "ck_#{uniqClass}" %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
@@ -15,5 +15,6 @@
 		$(".mask").hide();
 		$(".site_creator_modal").hide();
 		$('.' + "<%=j uniqClass %>").hide();
+		features["<%=j uniqClass %>"] = data[""]["introduction_feature"];
 	});
 </script>

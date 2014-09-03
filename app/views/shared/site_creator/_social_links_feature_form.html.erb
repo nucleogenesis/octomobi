@@ -1,0 +1,28 @@
+<%= form_for :social_links_feature, 
+	url: site_creator_preview_parser_path,
+	remote: true,
+	method: :get,
+	html: {class: uniqClass} do |f| %>
+	<%= f.label :twitter_url %>
+	<%= f.text_field :twitter_url %>
+	<%= f.label :facebook_url %>
+	<%= f.text_field :facebook_url %>
+	<%= f.label :google_plus_url %>
+	<%= f.text_field :google_plus_url %>
+	<%= f.label :pinterest_url %>
+	<%= f.text_field :pinterest_url %>
+	<%= f.label :instagram_url %>
+	<%= f.text_field :instagram_url %>
+	<%= f.label :linkedin_url %>
+	<%= f.text_field :linkedin_url %>
+	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.submit "Finished Editiing" %>
+<% end %>
+<script>
+	$("." + "<%=j uniqClass %>").bind("ajax:success", function(e, data, status, xhr) {
+		$(".mask").hide();
+		$(".site_creator_modal").hide();
+		$('.' + "<%=j uniqClass %>").hide();
+		features["<%=j uniqClass %>"] = data[""]["social_links_feature"];
+	});
+</script>

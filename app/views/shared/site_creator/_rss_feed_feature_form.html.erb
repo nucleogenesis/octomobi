@@ -1,14 +1,14 @@
-<%= form_for :content_page_feature, 
+<%= form_for :rss_feed_feature, 
 	url: site_creator_preview_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
 	<%= f.label :title %>
 	<%= f.text_field :title %>
-	<%= f.label :slug %>
-	<%= f.text_field :slug %>
-	<%= f.label :content %>
-	<%= f.cktext_area :content, id: "ck_#{uniqClass}" %>
+	<%= f.label :feed_url %>
+	<%= f.text_field :feed_url %>
+	<%= f.label :entries_to_show %>
+	<%= f.text_field :entries_to_show %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
@@ -17,6 +17,6 @@
 		$(".mask").hide();
 		$(".site_creator_modal").hide();
 		$('.' + "<%=j uniqClass %>").hide();
-		features["<%=j uniqClass %>"] = data[""]["content_page_feature"];
+		features["<%=j uniqClass %>"] = data[""]["rss_feed_feature"];
 	});
 </script>

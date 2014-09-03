@@ -1,6 +1,8 @@
 class SiteCreatorController < ApplicationController
 	before_action :authenticate_customer!
+	before_action :authenticate_subscription
 	before_action :authenticate_site_ownership, :only => [:edit, :update, :destroy]
+	layout 'customers'
 
 	def new
 		@customer = current_customer
@@ -176,7 +178,22 @@ class SiteCreatorController < ApplicationController
 		# Ensure that the site trying to be accessed belongs to the
 		# current user.
 		if Site.find(params[:id]).customer_id != current_customer.id
-			flash[:alert] = "There is no site by that name."
+			flash[:alert] = "Error. Please contact administrator if you are trying to
+							access, edit, or update a site that you own."
+			redirect_to customer_dashboard_path
+		end
+	end
+
+	def authenticate_subscription
+		# Ensure that the customer has a subscription that allows access to 
+		# the site creator.
+		if current_customer.customer_type == "preview"
+			flash[:alert] = "That page does not exist."
+			redirect_to root_path
+		end
+		if current_customer.subscription.is_active == false
+			flash[:alert] = "You must update your subscription before you can
+							access, update, or create a site."
 			redirect_to customer_dashboard_path
 		end
 	end

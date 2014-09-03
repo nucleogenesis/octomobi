@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   @pricing_class = "pricing"
 
 
+
   # Define the FastSpring Object
   # need store_id, api_username, api_password, optional: company_id
 end

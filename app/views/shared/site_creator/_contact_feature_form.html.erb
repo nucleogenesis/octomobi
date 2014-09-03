@@ -3,12 +3,12 @@
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
-	<%= f.label :email %>
-	<%= f.email_field :email %>
-	<%= f.label :phone_number %>
-	<%= f.text_field :phone_number %>
-	<%= f.label :fax_number %>
-	<%= f.text_field :fax_number %>
+	<%= f.label :email_contact %>
+	<%= f.email_field :email_contact %>
+	<%= f.label :phone_contact %>
+	<%= f.text_field :phone_contact %>
+	<%= f.label :fax_contact %>
+	<%= f.text_field :fax_contact %>
 	<%= f.label :address %>
 	<%= f.text_field :address %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
@@ -19,5 +19,6 @@
 		$(".mask").hide();
 		$(".site_creator_modal").hide();
 		$('.' + "<%=j uniqClass %>").hide();
+		features["<%=j uniqClass %>"] = data[""]["contact_feature"];
 	});
 </script>

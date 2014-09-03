@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Octomobi | Customer Dashboard</title>
+		<%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+		<%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+		<%= csrf_meta_tags %>
+	</head>
+	<body>
+		<div class="wrapper">
+			<%= render :partial => 'shared/customers/header' %>
+			<!-- Empty Div for Modal Masking | Under Header to Give Links Back -->
+			<div class="mask"></div>
+			
+			<div class="content">
+
+			<%= yield %>
+
+			</div>
+
+			<div class="footer_buffer">&nbsp;</div>
+
+			<%= render :partial => 'shared/footer' %>
+		</div>
+	</body>
+</html>

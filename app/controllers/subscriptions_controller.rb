@@ -5,6 +5,19 @@ class SubscriptionsController < ApplicationController
 		# here from any link to a product within the site.
 	end
 
+	def create_pending
+		token = SecureRandom.hex
+		@subscription = Subscription.new(subscription_type: "pending", 
+										 customer_id: current_customer.id,
+										 api_key: token)
+		if @subscription.save
+			return render :json => {success: true, api_key: token,
+									customer_id: current_customer.id}
+		else
+			return render :json => {success: false}
+		end
+	end
+
 	def update
 		# This is where the url and redirect for sending
 		# the user to FastSpring for an account upgrade,

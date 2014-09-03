@@ -13,6 +13,7 @@
 				<%= f.label :password %>:
 				<%= f.password_field :password %>
 			</div>
+			<%= token_tag %>
 			<div id="login_button" class="form_button"><%= f.submit "Log In" %></div>
 		<% end %>
 	</div>
@@ -50,8 +51,10 @@ $(document).ready(function() {
 		});
 
 		// AJAX Stuff (Redirect to Dashboard)
-		$('form .login').bind("ajax:success", function(e, data, status, xhr) {
+		$('.login').bind("ajax:success", function(e, data, status, xhr) {
+			console.log(data);
 			if(data.success) {
+				$('.login,_modal, .mask').fadeOut(400);
 				window.location.replace("<%=j customer_dashboard_path %>");
 			}else{
 				console.log(data);

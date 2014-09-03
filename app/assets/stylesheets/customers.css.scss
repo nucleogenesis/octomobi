@@ -1,3 +1,96 @@
 // Place all the styles related to the customers controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+.customer_header {
+	width: 100%;
+	height: 50px;
+	background: #464646;
+
+	img { 
+		float: left;
+	}
+	.customer_nav {
+		width: 100%;
+		height: 50px;
+		ul {
+			list-style-type: none;
+			float: left;
+			margin: 0 0 0 40px;
+
+			li {
+				display: inline-block;
+				font-size: 16px;
+				color: #fff;
+				height: 50px;
+				width: 100px;
+				
+				a {
+					display: block;
+					height: 35px;
+					width: 100px;
+					color: #fff;
+					padding: 15px 0 0 0;
+					text-align: center;
+					text-decoration: none;
+				}
+
+				ul {
+					opacity: 1.0;
+					background: #464646;
+					width: 150px;
+					padding: 0;
+					margin: 0;
+					display: none;
+					position: absolute;
+
+					li {
+						z-index: 9999;
+						width: 150px;
+						height: 50px;
+						margin: 0;
+
+						a {
+							display: block;
+							width: 150px;
+							height: 35px;
+							padding: 15px 0 0 0;
+							color: #fff;
+							text-align: center;
+							text-decoration: none;
+						}
+					}
+				}
+			}
+
+			a:hover {
+				opacity: 0.8;
+			}
+			li:hover {
+				background: #686868;
+				ul {
+					background: #464646;
+					opacity: 1.0;
+					display: block;
+				}
+			}
+		}
+	}
+	.account_information {
+		margin: 15px;
+
+		em {
+			float: left;
+			color: #fff;
+			margin-right: 30px;
+		}
+		nav {
+			a {
+				color: #fff;
+				text-decoration: underline;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}

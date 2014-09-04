@@ -84,9 +84,9 @@
 									</div>
 									<script> 
 										$(document).ready(function(){
-										addOptions("<%= uniq_id %>", "<%= value.id %>"); 
+										addOptions("<%= uniq_id %>", "<%= values.id %>"); 
 										var initData = {};
-										<% value.attributes.each_pair do |k, v| %>
+										<% values.attributes.each_pair do |k, v| %>
 											<% if k == 'content' %>
 												<% v = escape_javascript(v) %>
 											<% end %>
@@ -142,7 +142,7 @@ $(document).ready(function() {
 
 	var currentPath = window.location.pathname;
 	var currentTab = "#templates";
-	var limitations = {
+	window.limitations = {
 		contact_feature: 1,
 		content_page_feature: 10000,
 		external_links_feature: 10000,
@@ -235,13 +235,17 @@ $(document).ready(function() {
 	//---------------------------------------//
 
 	$('#site_submit').click(function(e) {   
+		var featureList = $("#sortable").sortable("toArray");
+
 		console.log("__FEATURES__ ");
 		console.log(features);
+		console.log(featureList);
+
 
 		// 0. Alert if a data section is empty or if there are no features.
-		for(var key in features) {
-			if(!features[key]) {
-				alert("Feature '" + key.replace(/_[0-9]+/, "").split("_").join(" ") + "' is empty. Please add information to or remove the feature.");
+		for(var key in featureList) {
+			if(!features.hasOwnProperty(featureList[key]) || !features[featureList[key]]) {
+				alert("Feature '" + featureList[key].replace(/_[0-9]+/, "").split("_").join(" ") + "' is empty. Please add information to or remove the feature.");
 				$(currentTab).hide();
 				$("#creator").show();
 				return;
@@ -252,11 +256,11 @@ $(document).ready(function() {
 			alert("You need to add some features to your website!");
 			$(currentTab).hide();
 			$("#creator").show();
+			currentTab = "#creator";
 			return;
 		}
 
 		// 1. Add an Order key to each Object based on the array from the sortable
-		var featureList = $("#sortable").sortable("toArray");
 		for(var i in featureList){
 			features[featureList[i]].order = i;
 		}
@@ -265,6 +269,7 @@ $(document).ready(function() {
 		var finalObj = {};
 
 		for(var key in features) {
+			features[key].site_id = "<%= @site.id %>";
 			var newKey = key.replace(/_[0-9]+/, "");
 			delete features[key].form_id;
 
@@ -278,16 +283,17 @@ $(document).ready(function() {
 				finalObj[newKey] = features[key];
 			}
 		}
-		console.log(finalObj);
 
 		delete finalObj[0];
 
+		console.log(finalObj);
 		// 3. AJAX That Object off to the Rails Controller
 		var site = {};
 		<% @site.attributes.each_pair do |k, v| %>
 			<% if !['created_at', 'updated_at'].include?(k) %>
 				site["<%= k %>"] = "<%= v %>";
 			<% end %>
+				site['site_id'] = <%= @site.id %>;
 		<% end %>
 		
 		<% if params[:controller] == "site_creator" && params[:action] == "edit" %>
@@ -296,11 +302,11 @@ $(document).ready(function() {
 				data: {site: site, features: finalObj},
 				method: "patch"
 			})
-			.done(function(html) {
-				alert("AJAX... seemed to succeed");
+			.done(function(data) {
+				window.location = "<%=j customer_dashboard_path %>"
 			})
 			.fail(function(data) {
-				alert("AJAX FAILED");
+				alert("Failed to update.");
 			});
 		<% else %>
 			$.ajax({

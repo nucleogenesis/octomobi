@@ -3,6 +3,8 @@
 	<% title = feature.title %>
 	<% slug = feature.slug %>
 	<% content = feature.content %>
+	<% site_id = feature.site_id || site_id %>
+	<% id = feature.id %>
 <% end %>
 <%= form_for :content_page_feature, 
 	url: site_creator_preview_parser_path,
@@ -16,6 +18,8 @@
 	<%= f.label :content %>
 	<%= f.cktext_area :content, id: "ck_#{uniqClass}", value: content %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.hidden_field :site_id, value: site_id %>
+	<%= f.hidden_field :id, value: id %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
 <script>

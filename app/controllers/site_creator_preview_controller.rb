@@ -42,7 +42,7 @@ class SiteCreatorPreviewController < ApplicationController
 	def form
 		@class = params[:uniqClass].gsub(/_[0-9]+/, "")
 		if @class
-			return render partial: "shared/site_creator/#{@class}_form", locals: {uniqClass: params[:uniqClass]}
+			return render partial: "shared/site_creator/#{@class}_form", locals: {uniqClass: params[:uniqClass], id: params[:id]}
 		else
 			return render nothing: true
 			raise("No Unique Class Received")

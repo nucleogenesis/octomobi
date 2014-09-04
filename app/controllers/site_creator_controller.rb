@@ -31,6 +31,13 @@ class SiteCreatorController < ApplicationController
 	def edit
 		@site = Site.find(params[:id])
 		@features = @site.features
+
+		@customer = current_customer
+		@active_features = Feature.all.where(is_active: true)
+		@feature_ids = []
+		@active_features.each do |f|
+			@feature_ids.push(f.css_id)
+		end
 	end
 
 	def update
@@ -68,7 +75,7 @@ class SiteCreatorController < ApplicationController
 		params.require(:site).permit(:id, :title, :desktop_site_url, 
 									:google_analytics_api_key, :logo_url,
 									:site_type, :customer_id, :slug, 
-									:template)
+									:template, :is_active)
 	end
 
 	def save_features(features, site_id)
@@ -101,6 +108,8 @@ class SiteCreatorController < ApplicationController
 	end
 
 	def update_features(site = nil, features = nil, site_id = nil)
+		logger.debug("Site: #{site}, Features: #{features}, Site ID: #{site_id}")
+
 		unless site_id then raise ("Cannot update without a site id.") end
 
 		# Extract Removal Hash from Features

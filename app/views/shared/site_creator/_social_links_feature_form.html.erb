@@ -1,21 +1,34 @@
+<% if id.length > 0 %>
+	<% feature = find_feature(uniqClass.gsub(/_[0-9]+/, ""), id) %>
+	<% twitter = feature.twitter_url %>
+	<% facebook = feature.facebook_url %>
+	<% google = feature.google_plus_url %>
+	<% pinterest = feature.pinterest_url %>
+	<% instagram = feature.instagram_url %>
+	<% linkedin = feature.linkedin_url %>
+	<% site_id = feature.site_id || site_id %>
+	<% id = feature.id %>
+<% end %>
 <%= form_for :social_links_feature, 
 	url: site_creator_preview_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
 	<%= f.label :twitter_url %>
-	<%= f.text_field :twitter_url %>
+	<%= f.text_field :twitter_url, value: twitter %>
 	<%= f.label :facebook_url %>
-	<%= f.text_field :facebook_url %>
+	<%= f.text_field :facebook_url, value: facebook %>
 	<%= f.label :google_plus_url %>
-	<%= f.text_field :google_plus_url %>
+	<%= f.text_field :google_plus_url, value: google %>
 	<%= f.label :pinterest_url %>
-	<%= f.text_field :pinterest_url %>
+	<%= f.text_field :pinterest_url, value: pinterest %>
 	<%= f.label :instagram_url %>
-	<%= f.text_field :instagram_url %>
+	<%= f.text_field :instagram_url, value: instagram %>
 	<%= f.label :linkedin_url %>
-	<%= f.text_field :linkedin_url %>
+	<%= f.text_field :linkedin_url, value: linkedin %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.hidden_field :site_id, value: site_id %>
+	<%= f.hidden_field :id, value: id %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
 <script>

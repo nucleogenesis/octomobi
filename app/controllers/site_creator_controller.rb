@@ -136,8 +136,6 @@ class SiteCreatorController < ApplicationController
 				  ImageGalleryFeature]
 		if features
 			features.each_pair do |key, value|
-				logger.debug("VALUE (OG): #{value}")
-				logger.debug("---------------------")
 				# Setup the Feature Class Constant as feature_class
 				feature_class = key.to_s.split("_")
 				feature_class.each_index do |i|
@@ -147,18 +145,19 @@ class SiteCreatorController < ApplicationController
 
 				if !value.has_key?("0") && value[:site_id] == site_id 
 					logger.debug("Got here with #{value}")
-					if value.has_key?("id") 
+					if value.has_key?("id") && value[:id] != ""
 						feature_class.find(value[:id]).update_attributes(value)
 					else
 						save_feature.call(feature_class, value)
 					end
 				elsif value.has_key?("0") 
 					logger.debug("Way down here with #{value}")
-					value.each_pair do |key, value|
-						if value.has_key?("id") && value[:site_id] == site_id
-							feature_class.find(value[:id]).update_attributes(value)
+					value.each_pair do |key, val|
+						if val.has_key?("id") && val[:id] != "" && val[:site_id] == site_id
+							feature_class.find(val[:id]).update_attributes(val)
 						else
-							save_feature.call(feature_class, value)
+							logger.debug("Saving... #{key} | #{val}")
+							save_feature.call(feature_class, val)
 						end
 					end
 				else

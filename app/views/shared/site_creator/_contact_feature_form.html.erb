@@ -1,17 +1,28 @@
+<% if id.length > 0 %>
+	<% feature = find_feature(uniqClass.gsub(/_[0-9]+/, ""), id) %>
+	<% email = feature.email_contact %>
+	<% phone = feature.phone_contact %>
+	<% fax = feature.fax_contact %>
+	<% address = feature.address %>
+	<% site_id = feature.site_id || site_id %>
+	<% id = feature.id %>
+<% end %>
 <%= form_for :contact_feature, 
 	url: site_creator_preview_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
 	<%= f.label :email_contact %>
-	<%= f.email_field :email_contact %>
+	<%= f.email_field :email_contact, value: email%>
 	<%= f.label :phone_contact %>
-	<%= f.text_field :phone_contact %>
+	<%= f.text_field :phone_contact, value: phone %>
 	<%= f.label :fax_contact %>
-	<%= f.text_field :fax_contact %>
+	<%= f.text_field :fax_contact, value: fax %>
 	<%= f.label :address %>
-	<%= f.text_field :address %>
+	<%= f.text_field :address, value: address %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.hidden_field :site_id, value: site_id %>
+	<%= f.hidden_field :id, value: id %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
 <script>

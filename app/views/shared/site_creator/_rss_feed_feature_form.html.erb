@@ -1,16 +1,26 @@
+<% if id.length > 0 %>
+	<% feature = find_feature(uniqClass.gsub(/_[0-9]+/, ""), id) %>
+	<% title = feature.title %>
+	<% feed_url = feature.feed_url %>
+	<% entries = feature.entries_to_show %>
+	<% site_id = feature.site_id || site_id %>
+	<% id = feature.id %>
+<% end %>
 <%= form_for :rss_feed_feature, 
 	url: site_creator_preview_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
 	<%= f.label :title %>
-	<%= f.text_field :title %>
+	<%= f.text_field :title, value: title %>
 	<%= f.label :feed_url %>
-	<%= f.text_field :feed_url %>
+	<%= f.text_field :feed_url, value: feed_url %>
 	<%= f.label :entries_to_show %>
-	<%= f.text_field :entries_to_show %>
+	<%= f.text_field :entries_to_show, value: entries %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
 	<%= f.submit "Finished Editiing" %>
+	<%= f.hidden_field :site_id, value: site_id %>
+	<%= f.hidden_field :id, value: id %>
 <% end %>
 <script>
 	$("." + "<%=j uniqClass %>").bind("ajax:success", function(e, data, status, xhr) {

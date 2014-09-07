@@ -93,6 +93,7 @@
 											initData["<%= k %>"] = "<%= v %>";
 										<% end %>
 										initializeImportData("<%= uniq_id %>", initData);
+										});
 									</script>
 								</div>
 								<% count += 1 %>
@@ -289,11 +290,13 @@ $(document).ready(function() {
 		console.log(finalObj);
 		// 3. AJAX That Object off to the Rails Controller
 		var site = {};
-		<% @site.attributes.each_pair do |k, v| %>
-			<% if !['created_at', 'updated_at'].include?(k) %>
-				site["<%= k %>"] = "<%= v %>";
+		<% if params[:action] == 'edit' %>
+			<% @site.attributes.each_pair do |k, v| %>
+				<% if !['created_at', 'updated_at'].include?(k) %>
+					site["<%= k %>"] = "<%= v %>";
+				<% end %>
+					site['site_id'] = <%= @site.id %>;
 			<% end %>
-				site['site_id'] = <%= @site.id %>;
 		<% end %>
 		
 		<% if params[:controller] == "site_creator" && params[:action] == "edit" %>

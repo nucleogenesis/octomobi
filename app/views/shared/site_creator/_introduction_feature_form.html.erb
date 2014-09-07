@@ -1,13 +1,22 @@
+<% if id.length > 0 %>
+	<% feature = find_feature(uniqClass.gsub(/_[0-9]+/, ""), id) %>
+	<% title = feature.title %>
+	<% content = feature.content %>
+	<% site_id = feature.site_id || site_id %>
+	<% id = feature.id %>
+<% end %>
 <%= form_for :introduction_feature, 
 	url: site_creator_preview_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>
 	<%= f.label :title %>
-	<%= f.text_field :title %>
+	<%= f.text_field :title, value: title %>
 	<%= f.label :content %>
-	<%= f.cktext_area :content, id: "ck_#{uniqClass}" %>
+	<%= f.cktext_area :content, id: "ck_#{uniqClass}", value: content %>
 	<%= f.hidden_field :form_id, value: uniqClass %>
+	<%= f.hidden_field :site_id, value: site_id %>
+	<%= f.hidden_field :id, value: id %>
 	<%= f.submit "Finished Editiing" %>
 <% end %>
 <script>

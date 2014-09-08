@@ -1,0 +1,128 @@
+<%= javascript_include_tag 'site_creator' %>
+<section class="site_creator">
+
+	<div id="site_creator_main">
+		<nav class="site_creator_nav">
+			<a href="#" id="templates_link"><div class="creator_nav">Templates</div></a>
+			<a href="#" id="creator_link"><div class="creator_nav">Features</div></a>
+			<a href="#" id="summary_link"><div class="creator_nav">Summary</div></a>
+		</nav>
+		<section id="templates">
+			TEMPLATES
+			<!-- Insert The Templates, Open a Lightbox of the Image -->
+		</section>
+
+		<section id="creator">
+			<div id="tools">
+				<div id="tool_info">
+					&nbsp;
+					<!-- On Hover over a Tool, Present Information about that tool. -->
+				</div>
+				<div id="toolbox">
+					<!-- Inserts all tools via erb -->
+					<% @active_features.each do |f| %>
+						<div class="tool" id="<%= f.css_id %>_tool">
+							<div id="<%= f.css_id %>">
+								<img src="/assets/icons/content_page.png" />
+								<span class="tool_title"><%= f.title %></span>
+								<div class="tool_options">
+									<span class="delete">(X)</span> | <span class="edit">(Edit)</span>
+								</div>
+							</div>
+						</div>
+					<% end %>
+				</div>
+			</div>
+			<div id="feature_list">
+				<div id="sortable">
+					<% if @features %>
+						<% count = 1 %>
+						<% @features.each_pair do |feature, values| %>
+							<% if values.class == Array %>
+								<% values.each do |value| %>
+								<% uniq_id = "#{feature}_#{count}" %>
+								<div class="tool ui-draggable ui-draggable-handle" id=<%= uniq_id %> style="display: block;">
+									<div>
+										<img src=<%= "/assets/icons/#{feature.gsub("_feature", "")}.png" %> />
+										<span class="tool_title">
+											<%= feature.capitalize.gsub('_feature', '').split("_").join(" ") %>
+										</span>
+										<div class="tool_options" style="display: block;">
+											<span class="delete">(X)</span>
+											&nbsp;|&nbsp;
+											<span class="edit">(Edit)</span>
+										</div>
+									</div>
+									<script> 
+										$(document).ready(function(){
+											addOptions("<%= uniq_id %>", "<%= value.id %>");
+											var initData = {};
+											<% value.attributes.each_pair do |k, v| %>
+												<% if k == 'content' %>
+													<% v = escape_javascript(v) %>
+												<% end %>
+												initData["<%= k %>"] = "<%= v %>";
+											<% end %>
+											initializeImportData("<%= uniq_id %>", initData);
+										}); 
+									</script>
+								</div>
+								<% count += 1 %>
+								<% end %>
+							<% else %>
+								<% uniq_id = "#{feature}_#{count}" %>
+								<div class="tool ui-draggable ui-draggable-handle" id=<%= uniq_id %> style="display: block;">
+									<div>
+										<img src=<%= "/assets/icons/#{feature.gsub("_feature", "")}.png" %> />
+										<span class="tool_title">
+											<%= feature.capitalize.gsub('_feature', '').split("_").join(" ") %>
+										</span>
+										<div class="tool_options" style="display: block;">
+											<span class="delete">(X)</span>
+											&nbsp;|&nbsp;
+											<span class="edit">(Edit)</span>
+										</div>
+									</div>
+									<script> 
+										$(document).ready(function(){
+										addOptions("<%= uniq_id %>", "<%= values.id %>"); 
+										var initData = {};
+										<% values.attributes.each_pair do |k, v| %>
+											<% if k == 'content' %>
+												<% v = escape_javascript(v) %>
+											<% end %>
+											initData["<%= k %>"] = "<%= v %>";
+										<% end %>
+										initializeImportData("<%= uniq_id %>", initData);
+										});
+									</script>
+								</div>
+								<% count += 1 %>
+							<% end %>
+						<% end %>
+					<% end %>
+				</div>
+			</div>
+			<script> window.uniqIdCounter = parseInt("<%= count %>"); </script>
+		</section>
+
+		<section id="summary">
+			<div id="site_options">
+				<ul>
+					<li>Site Title</li>
+					<li>Site Slug</li>
+					<li>Something Else</li>
+				</ul>
+			</div>
+			<div id="site_submit">
+				<span>Publish My Preview Site</span>
+			</div>
+		</section>
+	</div>
+	<div id="mobile_preview">
+	</div>
+</section>
+<section class="site_creator_modal">
+	<div class=".alert"></div>
+	<!-- Insert Form Here via jQuery -->
+</section>

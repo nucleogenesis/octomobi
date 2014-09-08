@@ -42,13 +42,11 @@ OctomobiRails::Application.routes.draw do
 
 
 	#Site Creator (Preview / Production)
-	resources :site_creator, only: [:new, :create, :edit, :update, :destroy]
-
-	resources :site_creator_preview, only: [:new, :create]
-	match 'site_creator_preview/parse', to: 'site_creator_preview#ajax_handler', 
-		via: :get, as: 'site_creator_preview_parser'
-	match 'site_creator_preview/form', to: 'site_creator_preview#form',
-		via: :get
+	resources :site_creator, only: [:new, :create, :edit, :update, :destroy], path: '/site-creator'
+	match 'site-creator/customer-type', to: 'site_creator#customer_type', via: :get
+	match 'site-creator/form', to: 'site_creator#form', via: :get
+	match 'site-creator/parse', to: 'site_creator#parse', via: :get, 
+		as: 'site_creator_parser'
 
 	# Pages (Retail & Reseller Pricing)
 	match '/pages/pricing', to: 'pages#retailer_pricing', via: :get,

@@ -7,7 +7,7 @@
 	<% id = feature.id %>
 <% end %>
 <%= form_for :content_page_feature, 
-	url: site_creator_preview_parser_path,
+	url: site_creator_parser_path,
 	remote: true,
 	method: :get,
 	html: {class: uniqClass} do |f| %>

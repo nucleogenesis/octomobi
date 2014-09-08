@@ -1,3 +1,5 @@
+<script> window.loaded = false </script>
+<%= javascript_include_tag 'site_creator' %>
 <section class="site_creator">
 
 	<div id="site_creator_main">
@@ -19,13 +21,14 @@
 				</div>
 				<div id="toolbox">
 					<!-- Inserts all tools via erb -->
-					<% @active_features.each do |f| %>
+					<% @active_features.each_pair do |key, f| %>
 						<div class="tool" id="<%= f.css_id %>_tool">
 							<div id="<%= f.css_id %>">
-								<img src="/assets/icons/content_page.png" />
+								<img src="/assets/icons/<%= f.image %>" />
 								<span class="tool_title"><%= f.title %></span>
 								<div class="tool_options">
-									<span class="delete">(X)</span> | <span class="edit">(Edit)</span>
+									<span class="edit">(Edit)</span> 
+									<span class="delete">(X)</span>  
 								</div>
 							</div>
 						</div>
@@ -34,87 +37,28 @@
 			</div>
 			<div id="feature_list">
 				<div id="sortable">
-					<% if @features %>
-						<% count = 1 %>
-						<% @features.each_pair do |feature, values| %>
-							<% if values.class == Array %>
-								<% values.each do |value| %>
-								<% uniq_id = "#{feature}_#{count}" %>
-								<div class="tool ui-draggable ui-draggable-handle" id=<%= uniq_id %> style="display: block;">
-									<div>
-										<img src=<%= "/assets/icons/#{feature.gsub("_feature", "")}.png" %> />
-										<span class="tool_title">
-											<%= feature.capitalize.gsub('_feature', '').split("_").join(" ") %>
-										</span>
-										<div class="tool_options" style="display: block;">
-											<span class="delete">(X)</span>
-											&nbsp;|&nbsp;
-											<span class="edit">(Edit)</span>
-										</div>
-									</div>
-									<script> 
-										$(document).ready(function(){
-											addOptions("<%= uniq_id %>", "<%= value.id %>");
-											var initData = {};
-											<% value.attributes.each_pair do |k, v| %>
-												<% if k == 'content' %>
-													<% v = escape_javascript(v) %>
-												<% end %>
-												initData["<%= k %>"] = "<%= v %>";
-											<% end %>
-											initializeImportData("<%= uniq_id %>", initData);
-										}); 
-									</script>
-								</div>
-								<% count += 1 %>
-								<% end %>
-							<% else %>
-								<% uniq_id = "#{feature}_#{count}" %>
-								<div class="tool ui-draggable ui-draggable-handle" id=<%= uniq_id %> style="display: block;">
-									<div>
-										<img src=<%= "/assets/icons/#{feature.gsub("_feature", "")}.png" %> />
-										<span class="tool_title">
-											<%= feature.capitalize.gsub('_feature', '').split("_").join(" ") %>
-										</span>
-										<div class="tool_options" style="display: block;">
-											<span class="delete">(X)</span>
-											&nbsp;|&nbsp;
-											<span class="edit">(Edit)</span>
-										</div>
-									</div>
-									<script> 
-										$(document).ready(function(){
-										addOptions("<%= uniq_id %>", "<%= values.id %>"); 
-										var initData = {};
-										<% values.attributes.each_pair do |k, v| %>
-											<% if k == 'content' %>
-												<% v = escape_javascript(v) %>
-											<% end %>
-											initData["<%= k %>"] = "<%= v %>";
-										<% end %>
-										initializeImportData("<%= uniq_id %>", initData);
-										});
-									</script>
-								</div>
-								<% count += 1 %>
-							<% end %>
-						<% end %>
-					<% end %>
+					<!-- Insert Sortables via Draggable or jQuery if Editing -->
 				</div>
 			</div>
-			<script> window.uniqIdCounter = parseInt("<%= count %>"); </script>
 		</section>
 
 		<section id="summary">
 			<div id="site_options">
-				<ul>
-					<li>Site Title</li>
-					<li>Site Slug</li>
-					<li>Something Else</li>
-				</ul>
-			</div>
-			<div id="site_submit">
-				<span>Publish My Preview Site</span>
+				<%= form_for :site,
+					url: site_creator_parser_path,
+					remote: true,
+					method: :get,
+					html: {class: 'site_form'} do |f| %>
+					<%= f.label :title %>
+					<%= f.text_field :title %>
+					<%= f.label :slug %>
+					<%= f.text_field :slug %>
+					<%= f.label :gonna_add_image_upload_later %>
+					<%= f.hidden_field :template %>
+					<%= f.hidden_field :form_id, value: 'site' %>
+					<%= f.hidden_field :site_type, value: current_customer.customer_type %>
+					<%= f.submit "Finish Editing and Publish Site" %>
+				<% end %>
 			</div>
 		</section>
 	</div>
@@ -127,334 +71,3 @@
 </section>
 
 
-<script>
-$(document).ready(function() {
-
-	//----------------------------------------------//
-	// Octomobie Site Creator						//
-	// Dependencies: ckeditor, jquery, jquery-ui	//
-	//												//
-	// Written by Jacob Pierce						//
-	//----------------------------------------------//
-
-	//---------------------------------------//
-	//-------- Variable Declaration ---------//
-	//---------------------------------------//
-
-	var currentPath = window.location.pathname;
-	var currentTab = "#templates";
-	window.limitations = {
-		contact_feature: 1,
-		content_page_feature: 10000,
-		external_links_feature: 10000,
-		image_gallery_feature: 1,
-		introduction_feature: 1,
-		rss_feed_feature: 10000,
-		social_links_feature: 1
-	};
-	var currentList = [];				// Placeholder used to keep current order of sortable items
-	var map = {};						// Counts how many of each unique feature has been added
-	window.features = {};				// Gathers data from Edit Modals (NOTE: Global Variable)
-
-	uniqIdCounter = uniqIdCounter || 1;	// Used to assign each feature a unique ID and needs to be greater if 
-											// previous features are imported for editing
-	console.log("UNIQ COUNTER: " + uniqIdCounter);
-
-
-	//---------------------------------------//
-	//----------- General Settings ----------//
-	//---------------------------------------//
-
-	// Add 'basic_limited' limitations if that is the customer type or if it
-	// is a preview session.
-	if(currentPath.match(/\/site_creator_preview\/.+/) != null || "<%=j current_customer.customer_type %>" == "basic_limited") {
-		limitations.content_page_feature = 3;
-		limitations.external_links_feature = 3;
-	}
-
-	// Handle the Tabs 
-	$("#templates_link, #creator_link, #summary_link").click(function(e) {
-		e.preventDefault();
-
-		var pathId = "#" + this.id.replace("_link", "");
-		if(pathId != currentTab) {
-			$(currentTab).hide();
-			$(pathId).show();
-			currentTab = pathId;
-		}
-	});
-
-	//---------------------------------------//
-	//----------- Templates Tab -------------//
-	//---------------------------------------//
-
-	//---------------------------------------//
-	//--------- Site Creator Tab ------------//
-	//---------------------------------------//
-
-	// If Edit Mode with Imported Features and Data
-
-	// Pre-Add Relevant Data for Edit Action
-	<% if @features %>
-		<% @features.each do |f| %>
-			
-		<% end %>
-	<% end %>
-
-	// Set up the Draggable Elements in the Toolbox
-	<% @feature_ids.each do |id| %>
-		$("#<%= id %>" + "_tool").draggable({
-			revert: "invalid",
-			connectToSortable: "#sortable",
-			helper: "clone"
-		});
-	<% end %>
-
-
-	// Create Sortable List
-	$("#sortable").sortable({
-		revert: true,
-		update: function(event, ui) {
-			if(event.handleObj.namespace == 'draggable') {
-				var featureId = ui.item[0].firstElementChild.id;
-				var uniqId = featureId + "_" + uniqIdCounter;
-				
-				if(isNew(uniqId)) {
-					$(ui.item[0]).attr("id", uniqId);
-					$(ui.item[0].firstElementChild).removeAttr("id");
-					$("#" + uniqId + " .tool_options").show();
-					addOptions(uniqId, null);
-					uniqIdCounter += 1;
-					manageLimits();
-				}
-			}
-		}
-	});
-
-	//---------------------------------------//
-	//------------- Summary Tab -------------//
-	//---------------------------------------//
-
-	$('#site_submit').click(function(e) {   
-		var featureList = $("#sortable").sortable("toArray");
-
-		console.log("__FEATURES__ ");
-		console.log(features);
-		console.log(featureList);
-
-
-		// 0. Alert if a data section is empty or if there are no features.
-		for(var key in featureList) {
-			if(!features.hasOwnProperty(featureList[key]) || !features[featureList[key]]) {
-				alert("Feature '" + featureList[key].replace(/_[0-9]+/, "").split("_").join(" ") + "' is empty. Please add information to or remove the feature.");
-				$(currentTab).hide();
-				$("#creator").show();
-				return;
-			}
-		}
-
-		if($.isEmptyObject(features)) {
-			alert("You need to add some features to your website!");
-			$(currentTab).hide();
-			$("#creator").show();
-			currentTab = "#creator";
-			return;
-		}
-
-		// 1. Add an Order key to each Object based on the array from the sortable
-		for(var i in featureList){
-			features[featureList[i]].order = i;
-		}
-
-		// 2. Create the sweet object that 'site_creator_preview#create' can use
-		var finalObj = {};
-
-		for(var key in features) {
-			features[key].site_id = "<%= @site.id %>";
-			var newKey = key.replace(/_[0-9]+/, "");
-			delete features[key].form_id;
-
-			if(finalObj[newKey]) {
-				if(finalObj[newKey].constructor != Array) {
-					finalObj[newKey] = new Array(finalObj[newKey], features[key]);
-				} else {
-					finalObj[newKey].push(features[key]);
-				}
-			} else {
-				finalObj[newKey] = features[key];
-			}
-		}
-
-		delete finalObj[0];
-
-		console.log(finalObj);
-		// 3. AJAX That Object off to the Rails Controller
-		var site = {};
-		<% if params[:action] == 'edit' %>
-			<% @site.attributes.each_pair do |k, v| %>
-				<% if !['created_at', 'updated_at'].include?(k) %>
-					site["<%= k %>"] = "<%= v %>";
-				<% end %>
-					site['site_id'] = <%= @site.id %>;
-			<% end %>
-		<% end %>
-		
-		<% if params[:controller] == "site_creator" && params[:action] == "edit" %>
-			$.ajax({
-				url: '/site_creator/' + site.id,
-				data: {site: site, features: finalObj},
-				method: "patch"
-			})
-			.done(function(data) {
-				window.location = "<%=j customer_dashboard_path %>"
-			})
-			.fail(function(data) {
-				alert("Failed to update.");
-			});
-		<% else %>
-			$.ajax({
-				url: '/site_creator_preview',
-				data: {site: site, features: finalObj},
-				method: "post"
-			})
-			.done(function(html) {
-				alert("AJAX... seemed to succeed");
-			})
-			.fail(function(data) {
-				alert("AJAX FAILED");
-			});
-		<% end %>
-
-		// 4.	IF PREVIEW: Render a link to the site for them to use on their mobile to view the site
-		//					then render a call to action on the page asking the user to buy.
-		//		IF NEW:		Return to Dashboard	
-		//		
-		//		IF UPDATE:	Return to Dashboard
-	});
-});
-
-//---------------------------------------//
-//-------- Function Declaration ---------//
-//---------------------------------------//
-
-// Function to Render Uniq Forms w/ Uniq Classes
-function renderForm(uniqClass, feature_id) {
-	$.ajax({
-		url: '/site_creator_preview/form',
-		data: {uniqClass: uniqClass, id: feature_id}
-	})
-	.done(function(html) {
-		$(".site_creator_modal").append(html);
-	})
-	.fail(function(data) {
-		alert("AJAX FAILED");
-	});
-}
-
-// Functionality upon clicking the Delete & Edit Buttons in a Sortable Item
-function addOptions(id, feature_id) {
-
-	// Add delete functionality to sortable object
-	$("#" + id + " .delete").click(function(e) {
-		if(confirm("Are You Sure?")) {
-			$('.' + id).remove();			// Remove the Form w/ Data
-			$("#" + id).remove();			// Remove the Sortable list object
-
-			// Update the Map & Current Links Accordingly
-			manageLimits(id);
-		}
-	});
-
-	// Add edit functionality. Create, update, handle forms
-	$("#" + id + " .edit").click(function(e) {
-		var formClass = "." + id;
-
-		var maskHeight = $(document).height();
-		var maskWidth = $(window).width();
-
-		$('.mask').css({"width":maskWidth, "height":maskHeight});
-
-		$('.mask').fadeIn(500);
-		$('.mask').fadeTo("slow", 0.8);
-
-		var winH = $(window).height();
-		var winW = $(window).width();
-
-		$(".site_creator_modal").css('top', winH/2-$(".site_creator_modal").height()/2);
-		$(".site_creator_modal").css('left', winW/2-$(".site_creator_modal").width()/2);
-
-		$(".site_creator_modal").fadeIn(800);
-
-		if(!$(formClass).length) {
-			renderForm(id, feature_id);
-		} else {
-			$(formClass).show();
-		}
-	});
-}
-
-// Function to find if an id is new to the sortable
-function isNew(id) {
-	var currentList = $("#sortable").sortable("toArray");
-	for(var i in currentList) {
-		if(currentList[i] == id) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-}
-
-// Function to Handle the Changing of CSS Depending on 
-// whether or not limitations have been met.
-function manageLimits(deleted) {
-	deleted = deleted || false;
-
-	// Limits checked without regard to uniqId, only "*_feature"
-	if(deleted){
-		remove = deleted;
-		deleted = deleted.replace(/_[0-9]+/, "");
-	}
-
-	currentList = $("#sortable").sortable("toArray");
-	// Manage Limitations
-	map = {};
-
-	// Gather the current count for each feature
-	for(var i = 0; i < currentList.length; i++) {
-		if(map[currentList[i].replace(/_[0-9]+/, "")] != null) {
-			map[currentList[i].replace(/_[0-9]+/, "")] += 1;
-		}else{
-			map[currentList[i].replace(/_[0-9]+/, "")] = 1;
-		}
-	}
-
-	// Change CSS Accordingly
-	for(var key in map) {
-		if(map[key] == limitations[key]) {
-			$("#" + key + "_tool").css("background", "#464646");
-			$("#" + key + "_tool").draggable("disable");
-		}
-	}
-
-	// Reset CSS If a Limit is no longer Met
-	map[deleted] = map[deleted] || 0;
-	if(deleted && map[deleted] < limitations[deleted]) {
-		// Remove from Features
-		delete features[remove];
-
-		$("#" + deleted + "_tool").css("background", "pink");
-		$("#" + deleted + "_tool").draggable("enable");
-	}
-}
-function initializeImportData(uniqClass, featureData) {
-	$.ajax({
-		url: "<%= site_creator_preview_parser_path %>",
-		data: featureData
-		})
-		.done(function(data) {
-		data[""].site_id = "<%= @site.id %>";
-		features[uniqClass] = data[""];
-	});
-}
-</script>

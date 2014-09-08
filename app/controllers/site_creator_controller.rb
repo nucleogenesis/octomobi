@@ -1,53 +1,68 @@
 class SiteCreatorController < ApplicationController
 	before_action :authenticate_customer!
-	before_action :authenticate_subscription
 	before_action :authenticate_site_ownership, :only => [:edit, :update, :destroy]
 	layout 'customers'
 
 	def new
-		@customer = current_customer
 		@site = Site.new
 		@active_features = Feature.all.where(is_active: true)
 		@feature_ids = []
 		@active_features.each do |f|
 			@feature_ids.push(f.css_id)
 		end
+
+		respond_to do |format|
+			format.html
+			format.json {
+				render :json => {
+					customerType: current_customer.customer_type,
+					featureIds: @feature_ids,
+					activeFeatures: @active_features,
+					action: params[:action]
+				}
+			}
+		end
 	end
 
 	def create
-		@site = Site.new(site_creator_params)
-		@features = params[:features].to_hash
-
-		if @site.save
-			if save_features(@features, @site.id)
-				flash[:notice] = "Site #{@site.title} Created Successfully!"
-				redirect_to customer_dashboard_path
-			end
-		else
-			puts @site.errors.full_messages
-		end
+		logger.debug(site_creator_params)
 	end
 
 	def edit
 		@site = Site.find(params[:id])
 		@features = @site.features
 
-		@customer = current_customer
-		@active_features = Feature.all.where(is_active: true)
+		active_features = Feature.all.where(is_active: true)
+		@active_features = {};
 		@feature_ids = []
-		@active_features.each do |f|
+		active_features.each do |f|
 			@feature_ids.push(f.css_id)
+			@active_features.store(f.css_id, f)
+		end
+
+		respond_to do |format|
+			format.html
+			format.json {
+				render :json => {
+					customerType: current_customer.customer_type,
+					featureIds: @feature_ids,
+					activeFeatures: @active_features,
+					features: @features,
+					site: @site,
+					action: params[:action]
+				}
+			}
 		end
 	end
 
 	def update
-		if update_features(site_creator_params,
-						params[:features],
-						params[:id])
-			render :json => {success: true}
-		else
-			render :json => {success: false}
-		end
+		logger.debug("---------------")
+		logger.debug(params[:site])
+		logger.debug("---------------")
+		logger.debug(params[:features])
+		logger.debug("---------------")
+		logger.debug(params[:features][:introduction_feature_1])
+		logger.debug("---------------")
 	end
 
 	def destroy
@@ -70,12 +85,41 @@ class SiteCreatorController < ApplicationController
 
 	end
 
+	def parse
+		@params = {}
+		@return = {}
+		params.each_pair do |k, v|
+			@params.store(k, v) if k != "form_id" && k != "action" && k != "commit" && k != "controller"
+		end
+		@return.store(params[:form_id], @params)
+		render :json => @return
+	end
+
+	def form
+		form = params[:uniqClass].gsub(/_[0-9]+/, "")
+		if form
+			return render partial: "shared/site_creator/#{form}_form", 
+					locals: {uniqClass: params[:uniqClass], id: params[:id]}
+		else
+			return render nothing: true
+		end
+	end
+
+	def customer_type
+		return render :json => {customerType: current_customer.customer_type}
+	end
+
+	def current_site_data
+		return render :json => {site: Site.find(params[:site_id])}
+	end
+
 	private
 	def site_creator_params
 		params.require(:site).permit(:id, :title, :desktop_site_url, 
 									:google_analytics_api_key, :logo_url,
 									:site_type, :customer_id, :slug, 
 									:template, :is_active)
+		params.require(:features).permit(:introduction_feature, :content_page_feature)
 	end
 
 	def save_features(features, site_id)

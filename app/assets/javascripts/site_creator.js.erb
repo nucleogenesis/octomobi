@@ -1,0 +1,361 @@
+$(document).ready(function() {
+	if(!loaded) {
+		// --------------------
+		// Variable Declaration
+		// --------------------
+
+		var currentPath = window.location.pathname;
+		var currentList = [];
+		var map = {};
+		var customerType = "";
+		var activeFeatures = {};
+		var featureIds = [];
+		var importedFeatures = {};
+		var action = "";
+
+		window.site = {};
+		window.uniqIdCounter = 1;
+		window.features = {};
+
+		// Establish JS Awareness of Current Customer/Page Type
+		$.ajax({
+			url: currentPath,
+			method: 'get',
+			dataType: 'json',
+			async: false
+		}).done(function(data) {
+			customerType = data.customerType;
+			featureIds = data.featureIds;
+			activeFeatures = data.activeFeatures;
+			importedFeatures = data.features || features;
+			site = data.site || site;
+			action = data.action;
+		});
+
+		// Setup the Limitations as per customer type
+		window.limitations = {
+			contact_feature: 1,
+			content_page_feature: 10000,
+			external_links_feature: 10000,
+			image_gallery_feature: 1,
+			introduction_feature: 1,
+			rss_feed_feature: 10000,
+			social_links_feature: 1
+		}
+
+		if(customerType == 'basic' || customerType == 'preview') {
+			limitations.content_page_feature = 3;
+			limitations.external_links_feature = 3;
+		}
+
+		// Tab Handling Variable
+		var currentTab = "#templates";
+
+		
+
+		// ----------------
+		// Main Application
+		// ----------------
+
+
+		// Setup the Tab Handling
+		$("#templates_link, #creator_link, #summary_link").click(function(e) {
+			e.preventDefault();
+
+			var pathId = "#" + this.id.replace("_link", "");
+			if(pathId != currentTab) {
+				$(currentTab).hide();
+				$(pathId).show();
+				currentTab = pathId;
+			}
+		});
+
+
+		// Setup the Toolbox Draggables
+		for(var i in featureIds) {
+			$("#" + featureIds[i] + "_tool").draggable({
+				revert: "invalid",
+				connectToSortable: "#sortable",
+				helper: "clone"
+			});
+		}
+
+		// Setup the Sortable List && Handling Draggables that Are placed in the list
+		$("#sortable").sortable({
+			revert: true,
+			update: function(event, ui) {
+				// Only run code if the new object is dragged into the list
+				// because adding others is handled in the beginning
+				if(event.handleObj.namespace == 'draggable') {	
+					// Get the parent class
+					var parentClass = ui.item[0];
+					// Get the Uniq Id for the Item Added Here and Add 1 to the Counter
+					var uniqId = ui.item[0].firstElementChild.id + "_" + uniqIdCounter;
+					uniqIdCounter += 1;
+
+					// If the item added was dragged into it.
+					$(parentClass).attr('id', uniqId);
+					$(uniqId).removeAttr('id');
+					$(uniqId + " .tool_options").show();
+
+					renderForm(uniqId.replace("#", ""), "");
+
+					features[uniqId.replace("#", "")] = {};
+
+					addOptions(uniqId);
+
+					updateFormData();
+				}
+			}
+		});
+
+		// If Edit, initialize the features into the sortable list
+		if(action == 'edit') {
+			initializeFeatures(importedFeatures);
+			updateFormData();
+		}
+
+
+		// Make sure that if the site is a preview site that the slug is prepended with
+		// 'pre-V-iew-' to validate it as a preview site.
+		if (customerType == 'preview') {
+			if(!$('#site_slug')[0].value.match(/^pre-V-iew-/)) {
+				$('#site_slug')[0].value = "pre-V-iew-" + $('#site_slug')[0].value;
+			}
+		} else {
+			if($('#site_slug')[0].defaultValue.match(/^pre-V-iew-/)) {
+				$('#site_slug')[0].value = $('#site_slug')[0].value.replace(/pre-V-iew-/, "");
+			}
+		}
+
+		$('#site_slug').on('input', function() {
+			var defaultValue = $(this)[0].defaultValue;
+
+			if (customerType == 'preview') {
+				if(!$(this)[0].value.match(/^pre-V-iew-/)) {
+					$(this)[0].value = "pre-V-iew-" + $(this)[0].value;
+				}
+			} else {
+				if($(this)[0].defaultValue.match(/^pre-V-iew-/)) {
+					$(this)[0].value = $(this)[0].value.replace(/pre-V-iew-/, "");
+				}
+			}
+		});
+
+
+
+		$(".site_form").bind("ajax:success", function(e, data, status, xhr) {
+			site = data[""]['site'];
+			saveAndFinish();
+		});
+
+		// ---------------
+		// Local Functions
+		// ---------------
+
+		// Called to update the variables used to store what items and
+		// lists are currently active and the map of all current features.
+		// It then updates all CSS accordingly.
+		//
+		// Also deletes an id from Features accordingly.
+		function updateFormData(deletedId) {
+			deletedId = deletedId || false;
+
+			if(deletedId) {
+				var remove = deletedId;
+				deletedId = deletedId.replace(/_[0-9]+/, "");
+			}
+
+			currentList = $("#sortable").sortable("toArray");
+
+			map = {};
+
+			// Create a map with current counts for each object.
+			for(var i = 0; i < currentList.length; i++) {
+				if(map[currentList[i].replace(/_[0-9]+/, "")] != null) {
+					map[currentList[i].replace(/_[0-9]+/, "")] += 1;
+				}else{
+					map[currentList[i].replace(/_[0-9]+/, "")] = 1;
+				}
+			}
+
+			// Change CSS Accordingly
+			for(var key in map) {
+				if(map[key] == limitations[key]) {
+					$("#" + key + "_tool").css("background", "#464646");
+					$("#" + key + "_tool").draggable("disable");
+				}
+			}
+
+			// Reset CSS If a Limit is no longer met AND
+			// Remove the deleted feature from features object
+			map[deletedId] = map[deletedId] || 0;
+			if(deletedId && map[deletedId] < limitations[deletedId]) {
+				// Remove from Features
+				delete features[remove];
+
+				$("#" + deletedId + "_tool").css("background", "pink");
+				$("#" + deletedId + "_tool").draggable("enable");
+			}
+		}
+
+		// Called when Editing a Site to add the features for the site
+		// to the sortable list
+		function initializeFeatures(importedFeatures) {
+			for(var key in importedFeatures) {
+				// Update all within the Array (treated as an object w/ numbered keys)
+				if(importedFeatures[key][0]) {
+					for(var subKey in importedFeatures[key]) {
+						var featId = activeFeatures[key].css_id + "_" + uniqIdCounter;
+						features[featId] = importedFeatures[key][subKey];
+
+						var html = "";
+						html += "<div class='tool ui-sortable-handle' ";
+						html += "id='" + featId + "'>";
+						html += "<img src='/assets/icons/" + activeFeatures[key].image + "' />";
+						html += "<span class='tool_title'>" + activeFeatures[key].title + "</span>";
+						html += "<div class='tool_options'>";
+						html += "<span class='edit'> (Edit) </span>";
+						html += "<span class='delete'> (X) </span>";
+						html += "</div></div>";
+
+						$("#sortable").append(html);
+						addOptions(featId);
+						renderForm(featId, importedFeatures[key][subKey].id);
+						uniqIdCounter += 1;
+					}
+				} else {
+					var featId = activeFeatures[key].css_id + "_" + uniqIdCounter;
+					features[featId] = importedFeatures[key];
+
+					var html = "";
+					html += "<div class='tool ui-sortable-handle'";
+					html += "id='" + featId + "'>";
+					html += "<img src='/assets/icons/" + activeFeatures[key].image + "' />";
+					html += "<span class='tool_title'>" + activeFeatures[key].title + "</span>";
+					html += "<div class='tool_options'>";
+					html += "<span class='edit'> (Edit) </span>";
+					html += "<span class='delete'> (X) </span>";
+					html += "</div></div>";
+
+					$("#sortable").append(html);
+					addOptions(featId);
+					renderForm(featId, importedFeatures[key].id);
+					uniqIdCounter += 1;
+				}
+			}
+		}
+
+		function addOptions(id) {
+			$("#" + id + " .tool_options").show();
+
+			// Add delete functionality to sortable object
+			$("#" + id + " .delete").click(function(e) {
+				if(confirm("Are You Sure?")) {
+					$('.' + id).remove();			// Remove the Form w/ Data
+					$("#" + id).remove();			// Remove the Sortable list object
+
+					// Update the Map & Current Links Accordingly
+					updateFormData(id);
+				}
+			});
+
+			// Add edit functionality. Create, update, handle forms
+			$("#" + id + " .edit").click(function(e) {
+				var formClass = "." + id;
+
+				var maskHeight = $(document).height();
+				var maskWidth = $(window).width();
+
+				$('.mask').css({"width":maskWidth, "height":maskHeight});
+
+				$('.mask').fadeIn(500);
+				$('.mask').fadeTo("slow", 0.8);
+
+				var winH = $(window).height();
+				var winW = $(window).width();
+
+				$(".site_creator_modal").css('top', winH/2-$(".site_creator_modal").height()/2);
+				$(".site_creator_modal").css('left', winW/2-$(".site_creator_modal").width()/2);
+
+				$(".site_creator_modal").fadeIn(800);
+
+				$(formClass).show();
+			});
+		}
+
+		function renderForm(uniqId, featureId) {
+			$.ajax({
+				url: '/site-creator/form',
+				data: {uniqClass: uniqId, id: featureId}
+			})
+			.done(function(html) {
+				$(".site_creator_modal").append(html);
+				$("." + uniqId).hide();
+			})
+			.fail(function(data) {
+				alert("Ajax Failure in renderForm()");
+			});
+		}
+
+		function saveAndFinish() {
+			// 0. Ensure There are Features && Each Feature Has Data
+			if($.isEmptyObject(features)) {
+				alert("Please add features to your mobile site!");
+				$(currentTab).hide();
+				$("#creator").show();
+				currentTab = "#creator";
+				return
+			}
+
+			for(var key in features) {
+				if($.isEmptyObject(features[key])) {
+					alert("Feature " + key.split("_").join(" ") + " cannot be empty.");
+					$(currentTab).hide();
+					$("#creator").show();
+					currentTab = "#creator";
+					return
+				}
+			}
+			currentList = $("#sortable").sortable("toArray");
+
+			// 1. Update the Orders of all of the items
+			for(var i in currentList) {
+				features[currentList[i]].order = i;
+			}
+
+
+			// 2. Determine and Setup Data to be Saved
+			var finalData = {
+				site: site,
+				features: features,
+			};
+			var ajaxMethod = '';
+			var ajaxUrl = '';
+
+			if(action == 'edit') {
+				ajaxMethod = 'patch';
+				ajaxUrl = currentPath.replace(/\/edit/, "");
+			} else {
+				ajaxMethod = 'post';
+				ajaxUrl = currentPath;
+			}
+
+
+			// 3. Save the Prepared Data
+			$.ajax({
+				url: ajaxUrl,	// Routed to act based on the method of action
+				method: ajaxMethod,		// Patch or Post depending on the action
+				data: finalData
+			})
+			.done(function(data) {
+				if (data.success == true) {
+					alert("Now redirect...");
+				} else {
+					alert("Uh oh...");
+				}
+			});
+		}
+	}
+	loaded = true;
+});

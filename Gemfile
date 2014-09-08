@@ -4,7 +4,7 @@ gem 'rails', '4.0.2'
 
 gem 'devise'
 
-gem 'sqlite3'
+gem 'mysql2'
 
 gem 'sass-rails', '~> 4.0.0'
 
@@ -31,6 +31,7 @@ group :test, :development do
 	gem 'factory_girl_rails', '~> 4.0'
 	gem 'rspec-rails', '~> 3.0.0'
 	gem 'database_cleaner'
+	gem 'sqlite3'
 	gem 'faker'
 	gem 'capybara'
 end
